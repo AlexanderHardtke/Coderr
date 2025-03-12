@@ -1,0 +1,11 @@
+offers
+orders
+order-count
+completed-order
+base-info
+profile
+/profiles/business/
+/profiles/customer/
+/login
+/registration
+/reviews
