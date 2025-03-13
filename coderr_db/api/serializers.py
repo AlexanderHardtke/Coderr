@@ -1,16 +1,10 @@
 from rest_framework import serializers
-from coderr_db.models import BusinessUserProfile, CustomerUserProfile
+from coderr_db.models import UserProfil
 from django.contrib.auth.models import User
 
 
-class BusinessUserProfileSerializer(serializers.ModelSerializer):
+class UserProfilSerializer(serializers.ModelSerializer):
     
     class Meta:
-         model = BusinessUserProfile
-         fields = '__all__'
-
-class CustomerUserProfileSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-         model = CustomerUserProfile
+         model = UserProfil
          fields = '__all__'

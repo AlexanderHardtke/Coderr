@@ -1,17 +1,20 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import ContactViewSet, ProfilesBusinessList, ProfilesBusinessDetail, ProfileCustomer, OrderViewSet, RegistrationView, UserLogin
+from .views import UserListViewSet
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 
-router = routers.SimpleRouter()
-router.register(r'orders', OrderViewSet)
+# router = routers.SimpleRouter()
+# router.register(r'offers', UserListViewSet)
+# router.register(r'orders', UserListViewSet)
+# router.register(r'reviews', UserListViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('users/', ProfilesBusinessList.as_view(), name='users-list'),
-    path('user/<int:pk>/', ProfilesBusinessDetail.as_view(), name='user-detail'),
-    path('registration/', RegistrationView.as_view(), name='registration-detail'),
-    path('login/', UserLogin.as_view(), name='login'),
-    path('usercheck/', CheckUserList.as_view(), name='usercheck-list')
+    # path('', include(router.urls)),
+    path('registration/', UserListViewSet.as_view(), name='registration-detail'),
+    path('login/', UserListViewSet.as_view(), name='login'),
+    path('profile/<int:pk>/', UserListViewSet.as_view(), name='profile-detail'),
+    path('profiles/business/', UserListViewSet.as_view(), name='profiles-list'),
+    path('profiles/customer/', UserListViewSet.as_view(), name='profiles-list'),
+    # path/('/base-info/')
 ]

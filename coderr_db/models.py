@@ -1,14 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class BusinessUserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.user.username
-    
-class CustomerUserProfile(models.Model):
+class UserProfil(models.Model):
+    CATEGORY_CHOICES = [
+        ('customer', 'Customer'),
+        ('business', 'Business'),
+    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user.username
+    type = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='customer')
