@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from coderr_db.models import UserProfil
 from django.contrib.auth.models import User
+import re
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -9,7 +10,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'repeated_password']
+        fields = ['username', 'email', 'password', 'repeated_password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -27,9 +28,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account = User(
             email=self.validated_data['email'],
             username=self.validated_data['username'],
-            first_name=self.validated_data['first_name'],
-            last_name=self.validated_data['last_name'],
         )
+        print
         account.set_password(pw)
         account.save()
 
@@ -38,7 +38,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         UserProfil.objects.create(
             user_profile=user_profile,
             email=account.email,
-            name=f"{account.first_name} {account.last_name}".strip(),
         )
 
         return account
