@@ -1,4 +1,4 @@
-from rest_framework import views, generics
+from rest_framework import views, generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,12 +22,12 @@ class RegistrationView(APIView):
                 'token':token.key,
                 'username':saved_user.username,
                 'email':saved_user.email,
-                'user_id':saved_user.user_id,
+                'user_id':saved_user.pk,
             }
         else:
             data=serializer.errors
 
-        return Response(data)
+        return Response({"your message": data}, status=status.HTTP_201_CREATED)
 
 
 

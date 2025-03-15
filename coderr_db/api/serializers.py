@@ -33,11 +33,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.set_password(pw)
         account.save()
 
-        user_profile = UserProfil.objects.create(user=account)
-
         UserProfil.objects.create(
-            user_profile=user_profile,
+            user=account,
             email=account.email,
+            username=account.username
         )
 
         return account
