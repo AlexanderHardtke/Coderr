@@ -8,12 +8,12 @@ class UserProfil(models.Model):
         ('customer', 'Customer'),
         ('business', 'Business'),
     ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     type = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='customer')
-    email = models.EmailField(max_length=50)
+    email = models.EmailField(max_length=50, unique=True)
     first_name = models.CharField(max_length=25, blank=True)
     last_name = models.CharField(max_length=25, blank=True)
-    username = models.CharField(max_length=50)
+    username = models.CharField(max_length=50, unique=True)
     file = models.CharField(max_length=50, blank=True)
     location = models.CharField(max_length=25, blank=True)
     tel_regex = RegexValidator(

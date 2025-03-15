@@ -5,11 +5,13 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 
 
-class UserTests(APITestCase):
+class CreateUserTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse('registration-detail')
 
     def test_create_user(self):
-        self.client = APIClient()
-        url = reverse('registration-detail')
         data = {
             "username": "exampleUsername",
             "email": "example@mail.de",
@@ -17,12 +19,30 @@ class UserTests(APITestCase):
             "repeated_password": "examplePassword",
             "type": "customer"
         }
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        response_duplicate = self.client.post(self.url, data, format='json')
+        self.assertWarnsMessage(response_duplicate.data, 'A user with that username already exists.')
 
-        # self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def test_fail_create_user(self):
+        data = {
+            "username": "exampleUsername",
+            "email": "example@mail.de",
+            "password": "rightPassword",
+            "repeated_password": "wrongPassword",
+            "type": "customer"
+        }
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_create_user(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # WIe schreibe ich einen Test für HTTP_500?
+    # def test_false_method(self):
+    #     self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class OfferTests(APITestCase):
