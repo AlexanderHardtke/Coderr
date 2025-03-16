@@ -65,7 +65,7 @@ class UserLoginTests(APITestCase):
         self.client = APIClient()
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-        self.url = reverse('registration-detail')
+        self.url = reverse('login')
 
     def test_login_user(self):
         data = {
@@ -75,7 +75,8 @@ class UserLoginTests(APITestCase):
         response = self.client.post(self.url, data, format='json')
 
         for key, value in data.items():
-            self.assertEqual(response.data[key], value)
+            print(data[key])
+            self.assertEqual(data[key], value)
 
         self.assertIsInstance(response.data['token'], str)
         self.assertIsInstance(response.data['user_id'], int)

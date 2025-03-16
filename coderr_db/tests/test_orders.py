@@ -1,4 +1,4 @@
-from rest_framework.test import APITestCase
+# from rest_framework.test import APITestCase
 
-class OrderTests(APITestCase):
-    pass
+# class OrderTests(APITestCase):
+#     pass
