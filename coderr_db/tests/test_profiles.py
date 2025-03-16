@@ -15,9 +15,14 @@ class ProfileTests(APITestCase):
         )
         self.user = User.objects.create_user(
             username='customerUser', password='customerpassword')
+        
+    def test_get_single_profile(self):
+        url = reverse('profile-detail', kwargs={'pk': self.user.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_profile(self):
-        url = reverse('profile-detail')
+        url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         data = {
             "first_name": "firstTest",
             "last_name": "lastTest",
@@ -40,10 +45,18 @@ class ProfileTests(APITestCase):
         self.assertIsInstance(response.data['created_at'], str)
 
     def test_unauthorized_user(self):
-        pass
+        url = reverse('profile-detail', kwargs={'pk': self.user.pk})
+        self.user = User.objects
+        response = self.client.get(url)
 
     def test_unauthorized_owner(self):
-        pass
+        url = reverse('profile-detail', kwargs={'pk': self.user.pk})
+        self.user = User.objects.create_user(
+            username='otherUser',
+            password='otherPassword',
+        )
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_user_not_found(self):
         pass
