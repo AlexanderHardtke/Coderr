@@ -1,5 +1,5 @@
 from django.urls import reverse
-from rest_framework.test import APIClient, APITestCase, force_authenticate
+from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -88,16 +88,3 @@ class UserLoginTests(APITestCase):
         }
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        
-
-
-class OfferTests(APITestCase):
-    pass
-
-
-class OrderTests(APITestCase):
-    pass
-
-
-class ReviewTests(APITestCase):
-    pass
