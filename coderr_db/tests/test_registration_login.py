@@ -29,8 +29,8 @@ class CreateUserTests(APITestCase):
         for key, value in partial_response.items():
             self.assertEqual(response.data[key], value)
 
-        self.assertIsInstance(response.data["token"], str)
-        self.assertIsInstance(response.data["user_id"], int)
+        self.assertIsInstance(response.data['token'], str)
+        self.assertIsInstance(response.data['user_id'], int)
 
         response_duplicate = self.client.post(self.url, data, format='json')
         self.assertWarnsMessage(response_duplicate.data,
@@ -77,8 +77,8 @@ class UserLoginTests(APITestCase):
         for key, value in data.items():
             self.assertEqual(response.data[key], value)
 
-        self.assertIsInstance(response.data["token"], str)
-        self.assertIsInstance(response.data["user_id"], int)
+        self.assertIsInstance(response.data['token'], str)
+        self.assertIsInstance(response.data['user_id'], int)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_fail_login_user(self):
