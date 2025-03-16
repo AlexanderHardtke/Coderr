@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
+from .permissions import isOwnerOrAdmin
 from coderr_db.models import UserProfil
 from .serializers import UserProfilSerializer, RegistrationSerializer
 
@@ -63,3 +64,9 @@ class UserListCustomerViewSet(generics.ListAPIView):
     permission_classes = [AllowAny]
     queryset = UserProfil.objects.filter(type='customer')
     serializer_class = UserProfilSerializer
+
+
+class UserSingleView(generics.RetrieveUpdateAPIView):
+    queryset = UserProfil.objects.all()
+    serializer_class = UserProfilSerializer
+    permission_classes = [isOwnerOrAdmin]
