@@ -28,7 +28,7 @@ class RegistrationView(APIView):
         else:
             Response({"your message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"your message": data}, status=status.HTTP_201_CREATED)
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class LoginView(ObtainAuthToken):
@@ -50,7 +50,7 @@ class LoginView(ObtainAuthToken):
         else:
             Response({"your message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"your message": data}, status=status.HTTP_201_CREATED)
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class UserListBusinessViewSet(generics.ListAPIView):
