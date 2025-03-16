@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from coderr_db.models import UserProfil
 from django.contrib.auth.models import User
-import re
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

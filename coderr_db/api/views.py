@@ -31,7 +31,13 @@ class RegistrationView(APIView):
 
 
 
-class UserListViewSet(generics.ListAPIView):
+class UserListBusinessViewSet(generics.ListAPIView):
     permission_classes = [AllowAny]
-    queryset = UserProfil.objects.all()
+    queryset = UserProfil.objects.filter(type='business')
+    serializer_class = UserProfilSerializer
+
+
+class UserListCustomerViewSet(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    queryset = UserProfil.objects.filter(type='customer')
     serializer_class = UserProfilSerializer
