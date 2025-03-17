@@ -49,10 +49,9 @@ class LoginView(ObtainAuthToken):
                 'user_id': user.pk,
             }
         else:
-            Response({"your message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)  
         return Response(data, status=status.HTTP_201_CREATED)
-
+        
 
 class UserListBusinessViewSet(generics.ListAPIView):
     permission_classes = [AllowAny]
