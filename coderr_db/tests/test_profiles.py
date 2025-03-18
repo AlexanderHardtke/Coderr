@@ -71,7 +71,7 @@ class ProfileTests(APITestCase):
         self.assertIsInstance(response.data['type'], str)
         self.assertIsInstance(response.data['created_at'], str)
 
-    #sind irgendwie doppelt
+    #sind irgendwie doppelt einmal für get und einmal für patch
     def test_update_unauthorized_user(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         unauthorized_token = 'unauthorized token'
@@ -98,3 +98,29 @@ class ProfileTests(APITestCase):
         data = {"first_name": "error"}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_business_profiles(self):
+        url = reverse('profiles-business-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertContains(response, 'Mustermann')
+        self.assertIsInstance(response.data['working_hours'], str)
+
+    def test_get_customer_profiles(self):
+        self.user = User.objects.create_user(username='customer', password='testpassword')
+        self.user_profile = UserProfil.objects.create(
+                user= self.user,
+                username= 'customer',
+                first_name= 'test',
+                last_name= 'customeruser',
+                file= 'profile_picture_customer.jpg',
+                uploaded_at= '2023-09-15T09:00:00',
+                type= 'customer'
+        )
+
+        url = reverse('profiles-customer-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, 'customeruser')
+        self.assertIsInstance(response.data['uploaded_at'], str)

@@ -14,7 +14,7 @@ urlpatterns = [
     path('registration/', RegistrationView.as_view(), name='registration-detail'),
     path('login/', LoginView.as_view(), name='login'),
     path('profile/<int:pk>/', UserSingleView.as_view(), name='profile-detail'),
-    path('profiles/business/', UserListBusinessViewSet.as_view(), name='profiles-list'),
-    path('profiles/customer/', UserListCustomerViewSet.as_view(), name='profiles-list'),
+    path('profiles/business/', UserListBusinessViewSet.as_view(), name='profiles-business-list'),
+    path('profiles/customer/', UserListCustomerViewSet.as_view(), name='profiles-customer-list'),
     # path/('/base-info/')
 ]
