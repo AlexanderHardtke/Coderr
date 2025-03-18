@@ -51,11 +51,7 @@ class CreateUserTests(APITestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code,
                          status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    # Wie schreibe ich einen Test für HTTP_500?
-    # def test_false_method(self):
-    #     self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        
 
 class UserLoginTests(APITestCase):
 

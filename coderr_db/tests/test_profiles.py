@@ -71,6 +71,10 @@ class ProfileTests(APITestCase):
         self.assertIsInstance(response.data['type'], str)
         self.assertIsInstance(response.data['created_at'], str)
 
+    # Wie schreibe ich einen Test für HTTP_500?
+    # def test_false_method(self):
+    #     self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     #sind irgendwie doppelt einmal für get und einmal für patch
     def test_update_unauthorized_user(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
@@ -103,7 +107,6 @@ class ProfileTests(APITestCase):
         url = reverse('profiles-business-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.json()
         self.assertContains(response, 'Mustermann')
         self.assertIsInstance(response.data['working_hours'], str)
 
@@ -124,3 +127,13 @@ class ProfileTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, 'customeruser')
         self.assertIsInstance(response.data['uploaded_at'], str)
+
+    def test_unauthorized_profiles(self):
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        url = reverse('profiles-business-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        url = reverse('profiles-customer-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
