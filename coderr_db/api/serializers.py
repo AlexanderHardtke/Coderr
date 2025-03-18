@@ -28,7 +28,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email=self.validated_data['email'],
             username=self.validated_data['username'],
         )
-        print
         account.set_password(pw)
         account.save()
 
@@ -43,5 +42,20 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserProfilSerializer(serializers.ModelSerializer):
     
     class Meta:
-         model = UserProfil
-         fields = '__all__'
+        model = UserProfil
+        fields = '__all__'
+
+
+class UserProfilBusinessSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = UserProfil
+        exclude = ['email', 'created_at', 'uploaded_at']
+
+
+class UserProfilCustomerSerializer(serializers.ModelSerializer):
+    uploaded_at = serializers.ReadOnlyField(source='created_at')
+
+    class Meta:
+        model = UserProfil
+        fields = ['user', 'username', 'first_name', 'last_name', 'file', 'uploaded_at', 'type']

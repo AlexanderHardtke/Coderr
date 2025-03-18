@@ -111,9 +111,9 @@ class ProfileTests(APITestCase):
         self.assertIsInstance(response.data['working_hours'], str)
 
     def test_get_customer_profiles(self):
-        self.user = User.objects.create_user(username='customer', password='testpassword')
+        self.test_user = User.objects.create_user(username='customer', password='testpassword')
         self.user_profile = UserProfil.objects.create(
-                user= self.user,
+                user= self.test_user,
                 username= 'customer',
                 first_name= 'test',
                 last_name= 'customeruser',

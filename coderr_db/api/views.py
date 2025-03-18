@@ -7,7 +7,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 
 from .permissions import isOwnerOrAdmin
 from coderr_db.models import UserProfil
-from .serializers import UserProfilSerializer, RegistrationSerializer
+from .serializers import UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer, UserProfilCustomerSerializer
 
 
 class RegistrationView(APIView):
@@ -56,13 +56,13 @@ class LoginView(ObtainAuthToken):
 class UserListBusinessViewSet(generics.ListAPIView):
     permission_classes = [AllowAny]
     queryset = UserProfil.objects.filter(type='business')
-    serializer_class = UserProfilSerializer
+    serializer_class = UserProfilBusinessSerializer
 
 
 class UserListCustomerViewSet(generics.ListAPIView):
     permission_classes = [AllowAny]
     queryset = UserProfil.objects.filter(type='customer')
-    serializer_class = UserProfilSerializer
+    serializer_class = UserProfilCustomerSerializer
 
 
 class UserSingleView(generics.RetrieveUpdateAPIView):
