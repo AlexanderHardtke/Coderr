@@ -1,6 +1,5 @@
-import json
 
-x= {
+data= {
   "title": "Grafikdesign-Paket",
   "image": null,
   "description": "Ein umfassendes Grafikdesign-Paket für Unternehmen.",
@@ -44,5 +43,5 @@ x= {
   ]
 }
 
-data = json.loads(x)
-print(data)
+details_list = data['details']
+print(details_list)
