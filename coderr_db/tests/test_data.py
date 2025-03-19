@@ -1,0 +1,130 @@
+from coderr_db.models import Offer
+
+new_offer_data = {
+    "title": "Zweites Grafikdesign-Paket",
+    "image": None,
+    "description": "Ein umfassendes Grafikdesign-Paket für Unternehmen.",
+    "details": [
+        {
+            "title": "Zweites Basic Design",
+            "revisions": 2,
+            "delivery_time_in_days": 5,
+            "price": 100,
+            "features": ["Logo Design", "Visitenkarte"],
+            "offer_type": "basic"
+        },
+        {
+            "title": "Zweites Standard Design",
+            "revisions": 5,
+            "delivery_time_in_days": 7,
+            "price": 200,
+            "features": ["Logo Design", "Visitenkarte", "Briefpapier"],
+            "offer_type": "standard"
+        },
+        {
+            "title": "Zweites Premium Design",
+            "revisions": 10,
+            "delivery_time_in_days": 10,
+            "price": 500,
+            "features": ["Logo Design", "Visitenkarte", "Briefpapier", "Flyer"],
+            "offer_type": "premium"
+        }
+    ]
+}
+
+def create_test_offers():
+    return [
+        Offer.objects.create(
+            title='API-Paket',
+            image=None,
+            description='Ein umfassendes API-Paket für Unternehmen.',
+            details=[
+                {
+                    "title": "Basic API",
+                    "revisions": 2,
+                    "delivery_time_in_days": 6,
+                    "price": 150,
+                    "features": ["Login", "Registrierung"],
+                    "offer_type": "basic"
+                },
+                {
+                    "title": "Standard API",
+                    "revisions": 5,
+                    "delivery_time_in_days": 8,
+                    "price": 300,
+                    "features": ["Login", "Registrierung", "Bearbeitung einfacher Datenstrukturen"],
+                    "offer_type": "standard"
+                },
+                {
+                    "title": "Premium API",
+                    "revisions": 10,
+                    "delivery_time_in_days": 15,
+                    "price": 750,
+                    "features": ["Login", "Registrierung", "Bearbeitung einfacher und komplexer Datenstrukturen"],
+                    "offer_type": "premium"
+                }
+            ]
+        ),
+        Offer.objects.create(
+            title='Grafikdesign-Paket',
+            image=None,
+            description='Ein umfassendes Grafikdesign-Paket für Unternehmen.',
+            details=[
+                {
+                    "title": "Basic Design",
+                    "revisions": 2,
+                    "delivery_time_in_days": 5,
+                    "price": 100,
+                    "features": ["Logo Design", "Visitenkarte"],
+                    "offer_type": "basic"
+                },
+                {
+                    "title": "Standard Design",
+                    "revisions": 5,
+                    "delivery_time_in_days": 7,
+                    "price": 200,
+                    "features": ["Logo Design", "Visitenkarte", "Briefpapier"],
+                    "offer_type": "standard"
+                },
+                {
+                    "title": "Premium Design",
+                    "revisions": 10,
+                    "delivery_time_in_days": 10,
+                    "price": 500,
+                    "features": ["Logo Design", "Visitenkarte", "Briefpapier", "Flyer"],
+                    "offer_type": "premium"
+                }
+            ]
+        ),
+        Offer.objects.create(
+            title='App-Umwandlung',
+            image=None,
+            description='Ein umwandlung ihrer Website in eine Smartphone-App.',
+            details=[
+                {
+                    "title": "Android",
+                    "revisions": 2,
+                    "delivery_time_in_days": 3,
+                    "price": 100,
+                    "features": ["Funktional in Android-Store"],
+                    "offer_type": "basic"
+                },
+                {
+                    "title": "Apple-IOS",
+                    "revisions": 3,
+                    "delivery_time_in_days": 5,
+                    "price": 150,
+                    "features": ["Funktional in Apple-Store", "Geprüft durch Apple"],
+                    "offer_type": "standard"
+                },
+                {
+                    "title": "Android + Apple-IOS",
+                    "revisions": 6,
+                    "delivery_time_in_days": 7,
+                    "price": 225,
+                    "features": ["Funktional in Android-Store", "Funktional in Apple-Store", "Geprüft durch Apple"],
+                    "offer_type": "premium"
+                }
+            ]
+        )
+    ]
