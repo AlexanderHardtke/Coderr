@@ -57,6 +57,15 @@ invalid_offer_data = {
     "updated_at": "2024-09-30T15:00:00Z"
 }
 
+new_review_data = {
+  "id": 3,
+  "business_user": 2,
+  "reviewer": 3,
+  "rating": 5,
+  "description": "Hervorragende Erfahrung!",
+  "created_at": "2023-10-30T15:30:00Z",
+  "updated_at": "2023-10-30T15:30:00Z"
+}
 
 def create_test_offers():
     return [
