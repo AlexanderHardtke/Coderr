@@ -1,5 +1,7 @@
 from coderr_db.models import Offer
 
+invalid_offer_pk = 66
+
 new_offer_data = {
     "title": "Zweites Grafikdesign-Paket",
     "image": None,
@@ -31,6 +33,29 @@ new_offer_data = {
         }
     ]
 }
+
+patched_offer_data = {
+    "title": "patched Grafikdesign-Paket",
+    "description": "Ein umfassendes patched Grafikdesign-Paket für Unternehmen.",
+    "details": [
+        {
+            "title": "Zweites patched Basic Design",
+            "revisions": 20,
+            "delivery_time_in_days": 50,
+            "price": 1000,
+            "features": ["patched Logo Design", "patched Visitenkarte"],
+        }
+    ]
+}
+
+invalid_offer_data = {
+    "id": 1,
+    "customer_user": 1,
+    "business_user": 2,
+    "created_at": "2024-09-29T10:00:00Z",
+    "updated_at": "2024-09-30T15:00:00Z"
+}
+
 
 def create_test_offers():
     return [
