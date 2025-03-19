@@ -1,6 +1,7 @@
 from coderr_db.models import Offer
 
 invalid_offer_pk = 66
+offer_detail = 4
 
 new_offer_data = {
     "title": "Zweites Grafikdesign-Paket",

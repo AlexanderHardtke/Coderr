@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from coderr_db.models import Offer, UserProfil
 from coderr_db.api.serializers import OfferSerializer
-from .test_data import create_test_offers, new_offer_data, invalid_offer_pk, patched_offer_data, invalid_offer_data
+from .test_data import create_test_offers, new_offer_data, invalid_offer_pk, patched_offer_data, invalid_offer_data, offer_detail
 
 
 class OfferTests(APITestCase):
@@ -128,8 +128,10 @@ class OfferTests(APITestCase):
 
     def test_delete_offer(self):
         url = reverse('offers-detail', kwargs={'pk': self.user_offers[0].pk})
-        response = self.client.delete(url, format='json')
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_unauthorized_delete_offer(self):
         url = reverse('offers-detail', kwargs={'pk': self.user_offers[0].pk})
@@ -151,4 +153,23 @@ class OfferTests(APITestCase):
     def test_not_found_delete_offer(self):
         url = reverse('offers-detail', kwargs={'pk': invalid_offer_pk})
         response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_offer_detail(self):
+        url = reverse('offerdetails-detail', kwargs={'pk': offer_detail})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data['price'], int)
+
+    def test_unauthorized_get_offer_detail(self):
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        url = reverse('offerdetails-detail', kwargs={'pk': offer_detail})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_not_found_get_offer_detail(self):
+        url = reverse('offerdetails-detail', kwargs={'pk': invalid_offer_pk})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
