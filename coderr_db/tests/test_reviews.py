@@ -150,4 +150,26 @@ class ReviewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_review_single(self):
-        url = reverse('review-detail')
+        url = reverse('review-detail', kwargs={'pk': 1})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_unauthorized_delete_review_single(self):
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_forbidden_delete_review_single(self):
+        self.token = Token.objects.create(user=self.business_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_not_found_delete_review_single(self):
+        url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
