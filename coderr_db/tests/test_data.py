@@ -1,4 +1,6 @@
-from coderr_db.models import Offer, Order
+from coderr_db.models import Offer, Order, UserProfil
+from django.contrib.auth.models import User
+
 
 invalid_offer_pk = 254
 invalid_order_pk = 254
@@ -185,5 +187,41 @@ def create_test_orders():
             status="in_progress",
             created_at="2024-09-29T10:00:00Z",
             updated_at="2024-09-30T12:00:00Z"
+        )
+    ]
+
+def create_business_user(user):
+    return [
+        UserProfil.objects.create(
+                user= user,
+                username= 'business',
+                first_name= 'Max',
+                last_name= 'Mustermann',
+                file= 'profile_picture.jpg',
+                location= 'Berlin',
+                tel= '123456789',
+                description= 'Business description',
+                working_hours= '9-17',
+                type= 'business',
+                email= 'max@business.de',
+                created_at= '2023-01-01T12:00:00'
+        )
+    ]
+
+def create_customer_user(user):
+    return [
+        UserProfil.objects.create(
+                user= user,
+                username= 'customer',
+                first_name= 'Jane',
+                last_name= 'Doe',
+                file= 'profile_picture.jpg',
+                location= 'Berlin',
+                tel= '123456789',
+                description= 'customer description',
+                working_hours= '9-17',
+                type= 'customer',
+                email= 'max@customer.de',
+                created_at= '2023-01-01T12:00:00'
         )
     ]

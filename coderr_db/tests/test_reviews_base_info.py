@@ -4,46 +4,20 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from coderr_db.models import Review, UserProfil
-from .test_data import create_test_orders, create_test_offers, invalid_review_pk
+from .test_data import create_customer_user, create_business_user, create_test_orders, create_test_offers, invalid_review_pk
 
 
 class ReviewTests(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser', password='testpassword'
+            username='customeruser', password='customerpw'
         )
-        self.user_profile = UserProfil.objects.create(
-            user=self.user,
-            username='testuser',
-            first_name='Max',
-            last_name='Mustermann',
-            file='profile_picture.jpg',
-            location='Berlin',
-            tel='123456789',
-            description='Customer description',
-            working_hours='9-17',
-            type='customer',
-            email='max@customer.de',
-            created_at='2023-01-01T12:00:00'
-        )
+        self.user_profile = create_customer_user(self.user)
         self.business_user = User.objects.create_user(
             username='businessuser', password='businesspassword'
         )
-        self.business_user_profile = UserProfil.objects.create(
-            user=self.user,
-            username='business',
-            first_name='Max',
-            last_name='Mustermann',
-            file='profile_picture.jpg',
-            location='Berlin',
-            tel='123456789',
-            description='business description',
-            working_hours='9-17',
-            type='business',
-            email='max@business.de',
-            created_at='2023-01-01T12:00:00'
-        )
+        self.business_user_profile = create_business_user(self.business_user)
         self.user_offers = create_test_offers()
         self.user_orders = create_test_orders()
         self.user_review = Review.objects.create(
@@ -134,7 +108,8 @@ class ReviewTests(APITestCase):
 
         unauthorized_token = 'unauthorized token'
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token
+        )
         url = reverse('review-detail', kwargs={'pk': 1})
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -156,7 +131,8 @@ class ReviewTests(APITestCase):
     def test_unauthorized_delete_review_single(self):
         unauthorized_token = 'unauthorized token'
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token
+        )
         url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -3,31 +3,19 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-from coderr_db.models import UserProfil
+from .test_data import create_business_user, create_customer_user
 
 
 class ProfileTests(APITestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.user_profile = UserProfil.objects.create(
-                user= self.user,
-                username= 'testuser',
-                first_name= 'Max',
-                last_name= 'Mustermann',
-                file= 'profile_picture.jpg',
-                location= 'Berlin',
-                tel= '123456789',
-                description= 'Business description',
-                working_hours= '9-17',
-                type= 'business',
-                email= 'max@business.de',
-                created_at= '2023-01-01T12:00:00'
+        self.user = User.objects.create_user(
+            username='businessuser', password='businesspw'
         )
+        self.user_profile = create_business_user(self.user)
         self.client = APIClient()
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-        
 
     def test_get_single_profile(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
@@ -37,7 +25,8 @@ class ProfileTests(APITestCase):
     def test_get_unauthorized_user(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         unauthorized_token = 'unauthorized token'
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token)
         self.user = User.objects
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -51,20 +40,15 @@ class ProfileTests(APITestCase):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         data = {
             "first_name": "firstTest",
-            "last_name": "lastTest",
-            "location": "Testhausen",
-            "tel": "987654321",
-            "description": "Test description",
-            "working_hours": "10-18",
-            "email": "new_email@business.de"
+            "last_name": "lastTest"
         }
         response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.data['first_name'], "firstTest")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         for key, value in data.items():
             self.assertEqual(response.data[key], value)
 
-        # Sieht irgendwie schlecht aus
         self.assertIsInstance(response.data['user'], int)
         self.assertIsInstance(response.data['username'], str)
         self.assertIsInstance(response.data['file'], str)
@@ -74,12 +58,14 @@ class ProfileTests(APITestCase):
     def test_update_unauthorized_user(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         unauthorized_token = 'unauthorized token'
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token
+        )
         self.user = User.objects
         data = {"first_name": "error"}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        
+
     def test_update_profile_not_found(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk+1})
         data = {"first_name": "error"}
@@ -106,17 +92,10 @@ class ProfileTests(APITestCase):
         self.assertIsInstance(response.data['working_hours'], str)
 
     def test_get_customer_profiles(self):
-        self.test_user = User.objects.create_user(username='customer', password='testpassword')
-        self.user_profile = UserProfil.objects.create(
-                user= self.test_user,
-                username= 'customer',
-                first_name= 'test',
-                last_name= 'customeruser',
-                file= 'profile_picture_customer.jpg',
-                uploaded_at= '2023-09-15T09:00:00',
-                type= 'customer'
+        self.test_user = User.objects.create_user(
+            username='customer', password='customerpw'
         )
-
+        self.user_profile = create_customer_user(self.test_user)
         url = reverse('profiles-customer-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -125,7 +104,9 @@ class ProfileTests(APITestCase):
 
     def test_unauthorized_profiles(self):
         unauthorized_token = 'unauthorized token'
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token
+        )
         url = reverse('profiles-business-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -1,5 +1,11 @@
 asgiref==3.8.1
+attrs==25.3.0
 Django==5.1.7
+django-cors-headers==4.7.0
 djangorestframework==3.15.2
+jsonschema-specifications==2024.10.1
+referencing==0.36.2
+rpds-py==0.23.1
 sqlparse==0.5.3
+typing_extensions==4.12.2
 tzdata==2025.1

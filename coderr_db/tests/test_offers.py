@@ -3,31 +3,18 @@ from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-from coderr_db.models import Offer, UserProfil
+from coderr_db.models import Offer
 from coderr_db.api.serializers import OfferSerializer
-from .test_data import create_test_offers, new_offer_data, invalid_offer_pk, patched_offer_data, invalid_offer_data, offer_detail
+from .test_data import create_business_user, create_test_offers, new_offer_data, invalid_offer_pk, patched_offer_data, invalid_offer_data, offer_detail
 
 
 class OfferTests(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser', password='testpassword'
+            username='businessuser', password='businesspw'
         )
-        self.user_profile = UserProfil.objects.create(
-            user=self.user,
-            username='testuser',
-            first_name='Max',
-            last_name='Mustermann',
-            file='profile_picture.jpg',
-            location='Berlin',
-            tel='123456789',
-            description='Business description',
-            working_hours='9-17',
-            type='business',
-            email='max@business.de',
-            created_at='2023-01-01T12:00:00'
-        )
+        self.user_profile = create_business_user(self.user)
         self.user_offers = create_test_offers()
         self.client = APIClient
         self.token = Token.objects.create(user=self.user)
