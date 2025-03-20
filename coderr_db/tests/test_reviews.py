@@ -7,6 +7,7 @@ from coderr_db.models import Review, UserProfil
 from coderr_db.api.serializers import ReviewSerializer
 from .test_data import create_test_orders, create_test_offers
 
+
 class ReviewTests(APITestCase):
 
     def setUp(self):
@@ -48,9 +49,9 @@ class ReviewTests(APITestCase):
         self.user_orders = create_test_orders()
         self.user_review = Review.objects.create(
             business_user=self.user,
-            rating = 4,
-            description = "Alles war toll!"
-            )
+            rating=4,
+            description="Alles war toll!"
+        )
         self.client = APIClient
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
@@ -70,7 +71,46 @@ class ReviewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_reviews(self):
+        data = {
+            "business_user": self.business_user_profile,
+            "rating": 1,
+            "description": "Test post"
+        }
         url = reverse('review-list')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIsInstance(response.data['created_at'], int)
+
+    def test_invalid_post_reviews(self):
+        data = {
+            "business_user": self.business_user_profile,
+            "error": 1,
+        }
+        url = reverse('review-list')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unauthorized_post_reviews(self):
+        self.token = Token.objects.create(user=self.business_user)
+        data = {
+            "business_user": self.business_user_profile,
+            "rating": 1,
+            "description": "Test post"
+        }
+        url = reverse('review-list')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_duplicate_post_reviews(self):
+        data = {
+            "business_user": self.business_user_profile,
+            "rating": 1,
+            "description": "Test post"
+        }
+        url = reverse('review-list')
+        response = self.client.post(url, data, format='json')
+        response_duplicate = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_patch_review_single(self):
         url = reverse('review-detail')

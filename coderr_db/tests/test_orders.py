@@ -54,7 +54,7 @@ class OrderTests(APITestCase):
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_post_order(self):
+    def test_invalid_post_order(self):
         data = {
             "offer_error_id": 1
         }
