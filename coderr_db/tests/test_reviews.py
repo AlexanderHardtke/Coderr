@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from coderr_db.models import Review, UserProfil
 from coderr_db.api.serializers import ReviewSerializer
-from .test_data import create_test_orders, create_test_offers
+from .test_data import create_test_orders, create_test_offers, invalid_review_pk
 
 
 class ReviewTests(APITestCase):
@@ -70,7 +70,7 @@ class ReviewTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_post_reviews(self):
+    def test_duplicate_post_reviews(self):
         data = {
             "business_user": self.business_user_profile,
             "rating": 1,
@@ -79,7 +79,10 @@ class ReviewTests(APITestCase):
         url = reverse('review-list')
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIsInstance(response.data['created_at'], int)
+        self.assertIsInstance(response.data['created_at'], str)
+        response_duplicate = self.client.post(url, data, format='json')
+        self.assertEqual(response_duplicate.status_code,
+                         status.HTTP_403_FORBIDDEN)
 
     def test_invalid_post_reviews(self):
         data = {
@@ -92,6 +95,7 @@ class ReviewTests(APITestCase):
 
     def test_unauthorized_post_reviews(self):
         self.token = Token.objects.create(user=self.business_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         data = {
             "business_user": self.business_user_profile,
             "rating": 1,
@@ -101,19 +105,49 @@ class ReviewTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_duplicate_post_reviews(self):
+    def test_patch_review_single(self):
+        url = reverse('review-detail', kwargs={'pk': 1})
         data = {
-            "business_user": self.business_user_profile,
-            "rating": 1,
-            "description": "Test post"
+            "rating": 5,
+            "description": "Noch besser als erwartet!"
         }
-        url = reverse('review-list')
-        response = self.client.post(url, data, format='json')
-        response_duplicate = self.client.post(url, data, format='json')
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data['updated_at'], str)
+
+    def test_invalid_patch_review_single(self):
+        url = reverse('review-detail', kwargs={'pk': 1})
+        data = {
+            "error": "Noch besser als erwartet!"
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unauthorized_patch_review_single(self):
+        data = {
+            "rating": 5,
+            "description": "Noch besser als erwartet!"
+        }
+        self.token = Token.objects.create(user=self.business_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_patch_review_single(self):
-        url = reverse('review-detail')
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        url = reverse('review-detail', kwargs={'pk': 1})
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_not_found_patch_review_single(self):
+        url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+        data = {
+            "rating": 5,
+            "description": "Noch besser als erwartet!"
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_review_single(self):
         url = reverse('review-detail')

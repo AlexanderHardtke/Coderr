@@ -1,7 +1,8 @@
 from coderr_db.models import Offer, Order
 
-invalid_offer_pk = 66
-invalid_order_pk = 66
+invalid_offer_pk = 254
+invalid_order_pk = 254
+invalid_review_pk = 254
 offer_detail = 4
 
 new_offer_data = {
