@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from coderr_db.models import Review, UserProfil
-from coderr_db.api.serializers import ReviewSerializer
 from .test_data import create_test_orders, create_test_offers, invalid_review_pk
 
 
@@ -173,3 +172,12 @@ class ReviewTests(APITestCase):
         url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_base_info(self):
+        url = reverse('base-info-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data['review_count'], int)
+        self.assertIsInstance(response.data['average_rating'], float)
+        self.assertIsInstance(response.data['business_profile_count'], float)
+        self.assertIsInstance(response.data['offer_count'], int)

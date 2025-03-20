@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from coderr_db.models import Order, UserProfil
-from coderr_db.api.serializers import OrderSerializer
 from .test_data import create_test_orders, create_test_offers, invalid_order_pk
 
 
