@@ -71,11 +71,6 @@ class ProfileTests(APITestCase):
         self.assertIsInstance(response.data['type'], str)
         self.assertIsInstance(response.data['created_at'], str)
 
-    # Wie schreibe ich einen Test für HTTP_500?
-    # def test_false_method(self):
-    #     self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-    #sind irgendwie doppelt einmal für get und einmal für patch
     def test_update_unauthorized_user(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         unauthorized_token = 'unauthorized token'
