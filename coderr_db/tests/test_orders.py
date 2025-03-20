@@ -215,3 +215,19 @@ class OrderTests(APITestCase):
         url = reverse('order-count-detail', kwargs={'pk': invalid_order_pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_order_count_completed_detail(self):
+        url = reverse('completed-order-count-detail', kwargs={'pk': self.user.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data['completed_order_count'], int)
+
+    def test_unauthorized_order_count_completed_detail(self):
+        url = reverse('completed-order-count-detail', kwargs={'pk': invalid_order_pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_not_found_order_count_completed_detail(self):
+        url = reverse('completed-order-count-detail', kwargs={'pk': invalid_order_pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
