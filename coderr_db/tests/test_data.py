@@ -1,6 +1,7 @@
-from coderr_db.models import Offer
+from coderr_db.models import Offer, Order
 
 invalid_offer_pk = 66
+invalid_order_pk = 66
 offer_detail = 4
 
 new_offer_data = {
@@ -58,14 +59,15 @@ invalid_offer_data = {
 }
 
 new_review_data = {
-  "id": 3,
-  "business_user": 2,
-  "reviewer": 3,
-  "rating": 5,
-  "description": "Hervorragende Erfahrung!",
-  "created_at": "2023-10-30T15:30:00Z",
-  "updated_at": "2023-10-30T15:30:00Z"
+    "id": 3,
+    "business_user": 2,
+    "reviewer": 3,
+    "rating": 5,
+    "description": "Hervorragende Erfahrung!",
+    "created_at": "2023-10-30T15:30:00Z",
+    "updated_at": "2023-10-30T15:30:00Z"
 }
+
 
 def create_test_offers():
     return [
@@ -161,5 +163,26 @@ def create_test_offers():
                     "offer_type": "premium"
                 }
             ]
+        )
+    ]
+
+
+def create_test_orders():
+    return [
+        Order.objects.create(
+            customer_user=1,
+            business_user=2,
+            title="Logo Design",
+            revisions=3,
+            delivery_time_in_days=5,
+            price=150,
+            features=[
+                "Logo Design",
+                "Visitenkarten"
+            ],
+            offer_type="basic",
+            status="in_progress",
+            created_at="2024-09-29T10:00:00Z",
+            updated_at="2024-09-30T12:00:00Z"
         )
     ]
