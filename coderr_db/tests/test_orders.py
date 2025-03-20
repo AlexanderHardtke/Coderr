@@ -155,3 +155,46 @@ class OrderTests(APITestCase):
         url = reverse('orders-detail', kwargs={'pk': invalid_order_pk})
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_order(self):
+        url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_unauthorized_delete_order(self):
+        url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})
+        self.user = User.objects.create_user(
+            username='otherUser', password='otherUser'
+        )
+        self.user_profile = UserProfil.objects.create(
+            user=self.user,
+            username='otherUser',
+            first_name='Max',
+            last_name='Mustermann',
+            file='profile_picture.jpg',
+            location='Berlin',
+            tel='123456789',
+            description='otherUser description',
+            working_hours='9-17',
+            type='customer',
+            email='max@other.de',
+            created_at='2023-01-01T12:00:00'
+        )
+        self.client = APIClient
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_not_found_delete_order(self):
+        url = reverse('orders-detail', kwargs={'pk': invalid_order_pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    
