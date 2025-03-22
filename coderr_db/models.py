@@ -27,6 +27,7 @@ class UserProfil(models.Model):
     description = models.CharField(max_length=255, blank=True)
     working_hours = models.CharField(max_length=10, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    uploaded_at = models.DateTimeField(auto_now=True)
     # uploaded_at = #ist das nicht updated at?
 
 

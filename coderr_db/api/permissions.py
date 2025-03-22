@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-class isOwnerOrAdmin(BasePermission):
+class IsOwnerOrAdmin(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
@@ -8,4 +8,18 @@ class isOwnerOrAdmin(BasePermission):
         elif request.method == 'DELETE':
             return bool(request.user and request.user.is_superuser)
         else:
+            return bool(request.user and request.user == obj.user)
+        
+
+class IsBusinessUser(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == 'POST':
+            return bool(request.user and request.user == obj.user)
+        
+
+class IsCustomerUser(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == 'POST':
             return bool(request.user and request.user == obj.user)

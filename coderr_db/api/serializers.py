@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_db.models import UserProfil
+from coderr_db.models import UserProfil, Offer, Order, Review, BaseInfo
 from django.contrib.auth.models import User
 
 
@@ -59,3 +59,34 @@ class UserProfilCustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfil
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'uploaded_at', 'type']
+
+
+class OfferSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Offer
+        fields = '__all__'
+
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+
+
+class Reviewserializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+
+class BaseInfoSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = BaseInfo
+        fields = '__all__'

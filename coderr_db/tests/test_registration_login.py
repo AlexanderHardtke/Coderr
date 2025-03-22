@@ -47,11 +47,21 @@ class CreateUserTests(APITestCase):
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_get_create_user(self):
+    def test_invalid_method_create_user(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code,
-                         status.HTTP_405_METHOD_NOT_ALLOWED)
-        
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+        data = {"username": "exampleUsername"}
+        response = self.client.patch(self.url, data, format='json')
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+        response = self.client.delete(self.url)
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+
 
 class UserLoginTests(APITestCase):
 
