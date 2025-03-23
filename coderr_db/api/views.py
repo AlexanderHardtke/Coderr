@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from .permissions import IsOwnerOrAdmin
+from .pagination import SmallResultSetPagination
+from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser
 from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review, BaseInfo
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
@@ -80,6 +81,7 @@ class OfferViewSet(generics.GenericAPIView):
     permission_classes = [AllowAny]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
+    pagination_class = SmallResultSetPagination
 
     def post():
         permission_classes = [IsBusinessUser]
