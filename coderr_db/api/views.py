@@ -119,6 +119,10 @@ class OrderViewSet():
 class ReviewViewSet():
     queryset = Review.objects.all()
     serializer_class = Reviewserializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['business_user_id', 'reviewer_id', 'ordering']
+    ordering_fields = ['updated_at', 'rating']
+    ordering = ['rating']
 
     def post():
         permission_classes = [IsCustomerUser]
