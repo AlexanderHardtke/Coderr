@@ -1,4 +1,4 @@
-from rest_framework import views, generics, status, filters
+from rest_framework import views, generics, status, filters, viewsets, mixins
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -78,7 +78,7 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfilSerializer
 
 
-class OfferViewSet(generics.GenericAPIView):
+class OfferViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
@@ -87,16 +87,13 @@ class OfferViewSet(generics.GenericAPIView):
     filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
 
     def post():
-        permission_classes = [IsCustomerUser]
-        pass
+        permission_classes = [IsBusinessUser]
 
     def patch():
         permission_classes = [IsOwnerOrAdmin]
-        pass
 
     def delete():
         permission_classes = [IsOwnerOrAdmin]
-        pass
 
 
 class OrderViewSet():
@@ -104,16 +101,13 @@ class OrderViewSet():
     serializer_class = OrderSerializer
 
     def post():
-        permission_classes = [IsBusinessUser]
-        pass
+        permission_classes = [IsCustomerUser]
 
     def patch():
         permission_classes = [IsOwnerOrAdmin]
-        pass
 
     def delete():
         permission_classes = [IsOwnerOrAdmin]
-        pass
 
 
 class ReviewViewSet():
@@ -126,15 +120,12 @@ class ReviewViewSet():
 
     def post():
         permission_classes = [IsCustomerUser]
-        pass
 
     def patch():
         permission_classes = [IsOwnerOrAdmin]
-        pass
 
     def delete():
         permission_classes = [IsOwnerOrAdmin]
-        pass
  
 
 
