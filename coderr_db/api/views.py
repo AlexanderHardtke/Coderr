@@ -1,9 +1,10 @@
-from rest_framework import views, generics, status
+from rest_framework import views, generics, status, filters
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .pagination import SmallResultSetPagination
 from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser
@@ -82,9 +83,11 @@ class OfferViewSet(generics.GenericAPIView):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     pagination_class = SmallResultSetPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
 
     def post():
-        permission_classes = [IsBusinessUser]
+        permission_classes = [IsCustomerUser]
         pass
 
     def patch():
@@ -100,10 +103,35 @@ class OrderViewSet():
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
+    def post():
+        permission_classes = [IsBusinessUser]
+        pass
+
+    def patch():
+        permission_classes = [IsOwnerOrAdmin]
+        pass
+
+    def delete():
+        permission_classes = [IsOwnerOrAdmin]
+        pass
+
 
 class ReviewViewSet():
     queryset = Review.objects.all()
     serializer_class = Reviewserializer
+
+    def post():
+        permission_classes = [IsCustomerUser]
+        pass
+
+    def patch():
+        permission_classes = [IsOwnerOrAdmin]
+        pass
+
+    def delete():
+        permission_classes = [IsOwnerOrAdmin]
+        pass
+ 
 
 
 class BaseInfoView(generics.RetrieveAPIView):

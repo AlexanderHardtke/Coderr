@@ -2,6 +2,7 @@ asgiref==3.8.1
 attrs==25.3.0
 Django==5.1.7
 django-cors-headers==4.7.0
+django-filter==25.1
 djangorestframework==3.15.2
 jsonschema-specifications==2024.10.1
 referencing==0.36.2
