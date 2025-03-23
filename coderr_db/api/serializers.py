@@ -39,6 +39,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         return account
 
+
 class UserProfilSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -62,11 +63,19 @@ class UserProfilCustomerSerializer(serializers.ModelSerializer):
 
 
 class OfferSerializer(serializers.ModelSerializer):
+
+    details = serializers.StringRelatedField(many=True, read_only=True)
     
     class Meta:
         model = Offer
         fields = '__all__'
 
+
+class OfferHyperlinkedSerializer(OfferSerializer, serializers.HyperlinkedModelSerializer):
+    
+    class Meta:
+        model = Offer
+        fields = '__all__'
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -76,13 +85,11 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class Reviewserializer(serializers.ModelSerializer):
     
     class Meta:
         model = Review
         fields = '__all__'
-
 
 
 class BaseInfoSerializer(serializers.ModelSerializer):

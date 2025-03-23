@@ -19,5 +19,5 @@ urlpatterns = [
     path('profile/<int:pk>/', UserSingleView.as_view(), name='profile-detail'),
     path('profiles/business/', UserListBusinessView.as_view(), name='profiles-business-list'),
     path('profiles/customer/', UserListCustomerView.as_view(), name='profiles-customer-list'),
-    path('/base-info/', BaseInfoView.as_view(), name='base-info-list')
+    path('base-info/', BaseInfoView.as_view(), name='base-info-list')
 ]

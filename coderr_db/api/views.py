@@ -96,7 +96,7 @@ class OfferViewSet(viewsets.ModelViewSet):
         permission_classes = [IsOwnerOrAdmin]
 
 
-class OrderViewSet():
+class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
@@ -110,7 +110,7 @@ class OrderViewSet():
         permission_classes = [IsOwnerOrAdmin]
 
 
-class ReviewViewSet():
+class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = Reviewserializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -126,7 +126,6 @@ class ReviewViewSet():
 
     def delete():
         permission_classes = [IsOwnerOrAdmin]
- 
 
 
 class BaseInfoView(generics.RetrieveAPIView):

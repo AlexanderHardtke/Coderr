@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class UserProfil(models.Model):
@@ -40,7 +41,6 @@ class Offer(models.Model):
     description = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    details = models.ForeignKey()
 
 
 class OfferDetail(models.Model):
@@ -49,9 +49,7 @@ class OfferDetail(models.Model):
     )
     title = models.CharField(max_length=50)
     revisions = models.PositiveIntegerField(default=0)
-    delivery_time_in_days = models.PositiveIntegerField(
-        blank=False, max_length=3
-    )
+    delivery_time_in_days = models.PositiveIntegerField(blank=False)
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=False)
     features = models.JSONField(default=list)
     offer_type = models.CharField(max_length=20, choices=[
@@ -90,10 +88,14 @@ class Order(models.Model):
 
 
 class Review(models.Model):
-    business_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    reviewer = models.ForeignKey(User, on_delete=models.CASCADE)
+    business_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="received_reviews"
+    )
+    reviewer = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="given_reviews"
+    )
     rating = models.IntegerField(
-        max_digits=1, max_value=5, min_value=1, blank=False
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -101,8 +103,8 @@ class Review(models.Model):
 
 
 class BaseInfo(models.Model):
-    review_count = models.IntegerField(max_length=4, blank=True)
+    review_count = models.IntegerField(blank=True)
     average_rating = models.DecimalField(
-        max_digits=1, decimal_places=1, max_value=5, min_value=1, blank=True)
-    business_profile_count = models.IntegerField(max_length=4, blank=True)
-    offer_count = models.IntegerField(max_length=4, blank=True)
+        max_digits=1, decimal_places=1, blank=True)
+    business_profile_count = models.IntegerField(blank=True)
+    offer_count = models.IntegerField(blank=True)
