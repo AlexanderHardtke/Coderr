@@ -78,7 +78,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    # pagination_class = SmallResultSetPagination
+    pagination_class = SmallResultSetPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
     ordering_fields = ['details__updated_at', 'details__price']
