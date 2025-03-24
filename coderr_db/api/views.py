@@ -12,12 +12,11 @@ from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review, Base
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
     UserProfilCustomerSerializer, OfferSerializer, OrderSerializer,
-    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer
+    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer, OfferListSerializer
 )
 
 
 class RegistrationView(APIView):
-    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = RegistrationSerializer(data=request.data)
@@ -40,7 +39,6 @@ class RegistrationView(APIView):
 
 
 class LoginView(ObtainAuthToken):
-    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -61,13 +59,11 @@ class LoginView(ObtainAuthToken):
 
 
 class UserListBusinessView(generics.ListAPIView):
-    permission_classes = [AllowAny]
     queryset = UserProfil.objects.filter(type='business')
     serializer_class = UserProfilBusinessSerializer
 
 
 class UserListCustomerView(generics.ListAPIView):
-    permission_classes = [AllowAny]
     queryset = UserProfil.objects.filter(type='customer')
     serializer_class = UserProfilCustomerSerializer
 
@@ -79,26 +75,16 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 
 
 class OfferViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     # pagination_class = SmallResultSetPagination
     # filter_backends = [DjangoFilterBackend]
     # filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
+    def list(self, request):
+        queryset = Offer.objects.all()
+        serializer = OfferListSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
 
     def perform_create(self, serializer):

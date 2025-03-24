@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-     
+
     repeated_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -19,11 +19,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         repeated_pw = self.validated_data['repeated_password']
 
         if pw != repeated_pw:
-            raise serializers.ValidationError({'error': 'passwords dont match'})
-        
+            raise serializers.ValidationError(
+                {'error': 'passwords dont match'})
+
         if User.objects.filter(email=self.validated_data['email']).exists():
             raise serializers.ValidationError({'error': 'email already used'})
-        
+
         account = User(
             email=self.validated_data['email'],
             username=self.validated_data['username'],
@@ -41,14 +42,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserProfilSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = UserProfil
         fields = '__all__'
 
 
 class UserProfilBusinessSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = UserProfil
         exclude = ['email', 'created_at', 'uploaded_at']
@@ -59,20 +60,21 @@ class UserProfilCustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfil
-        fields = ['user', 'username', 'first_name', 'last_name', 'file', 'uploaded_at', 'type']
+        fields = ['user', 'username', 'first_name',
+                  'last_name', 'file', 'uploaded_at', 'type']
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = OfferDetail
         exclude = ['url', 'offer']
 
-        
+
 class OfferSerializer(serializers.ModelSerializer):
 
     details = OfferDetailSerializer(many=True)
-    
+
     class Meta:
         model = Offer
         fields = '__all__'
@@ -86,31 +88,42 @@ class OfferSerializer(serializers.ModelSerializer):
         for detail_data in details_data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
-    
 
-class OfferHyperlinkedSerializer(OfferSerializer, serializers.HyperlinkedModelSerializer):
-    
+
+class OfferListSerializer(serializers.ModelSerializer):
+    details = serializers.SerializerMethodField()
+
     class Meta:
         model = Offer
         fields = '__all__'
 
+    def get_details(self, obj):
+        request = self.context.get('request')
+        return [
+            {
+                "id": detail.pk,
+                "url": request.build_absolute_uri(f"/api/offerdetails/{detail.id}/")
+            }
+            for detail in obj.details.all()
+        ]
+
 
 class OrderSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Order
         fields = '__all__'
 
 
 class Reviewserializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Review
         fields = '__all__'
 
 
 class BaseInfoSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = BaseInfo
         fields = '__all__'
