@@ -79,14 +79,32 @@ class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     # pagination_class = SmallResultSetPagination
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
-
+    filter_backends = [filters.SearchFilter]
+    search_fields = []
+    
     def list(self, request):
-        queryset = Offer.objects.all()
+        queryset = self.get_queryset()
         serializer = OfferListSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
 
+    def get_queryset(self):
+        queryset = Offer.objects.all()
+
+        creator_param = self.request.query_params.get('creator_id', None)
+        if creator_param is not None:
+            queryset = queryset.filter(user__id=creator_param)
+
+        price_param = self.request.query_params.get('min_price', None)
+        if price_param is not None:
+            price_param = float(price_param)
+            queryset = queryset.filter(details__price__lte=price_param)
+
+        delivery_param = self.request.query_params.get('max_delivery_time', None)
+        if delivery_param is not None:
+            queryset = queryset.filter(user__id=delivery_param)
+
+        return queryset
+    
     def perform_create(self, serializer):
         user = self.request.user.userprofil 
         permission_classes = [IsBusinessUser]
