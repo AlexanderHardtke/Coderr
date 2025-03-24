@@ -80,16 +80,16 @@ class OfferViewSet(viewsets.ModelViewSet):
     serializer_class = OfferSerializer
     # pagination_class = SmallResultSetPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = []
+    search_fields = ['title', 'description']
     ordering_fields = ['details__updated_at', 'details__price']
     
     def list(self, request):
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())
         serializer = OfferListSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
 
     def get_queryset(self):
-        queryset = Offer.objects.all()
+        queryset = super().get_queryset()
 
         creator_param = self.request.query_params.get('creator_id', None)
         if creator_param is not None:
