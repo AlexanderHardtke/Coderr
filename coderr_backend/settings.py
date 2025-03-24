@@ -141,9 +141,6 @@ REST_FRAMEWORK = {
         'anon': '20/hour',
         'user': '1000/hour'
     },
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],

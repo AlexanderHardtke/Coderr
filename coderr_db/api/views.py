@@ -1,5 +1,5 @@
 from rest_framework import views, generics, status, filters, viewsets, mixins, serializers
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -79,7 +79,6 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 
 
 class OfferViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     # pagination_class = SmallResultSetPagination
@@ -115,16 +114,20 @@ class OfferViewSet(viewsets.ModelViewSet):
 
 
 class OfferDetailView(APIView):
-    permission_classes = [AllowAny]
     queryset = OfferDetail.objects.all()
 
     def get(self, request, pk, format=None):
+        if not request.user.is_authenticated:
+            return Response({'detail': 'Benutzer ist nicht authentifiziert'}, status=status.HTTP_401_UNAUTHORIZED)
         try:
+            permission_classes = [IsAuthenticated]
             offer = OfferDetail.objects.get(pk=pk)
             serializer = OfferDetailSerializer(offer)
             return Response(serializer.data)
-        except Offer.DoesNotExist:
-            return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+        except OfferDetail.DoesNotExist:
+            return Response({'detail': 'Das Angebotsdetail mit der angegebenen ID wurde nicht gefunden.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'detail': 'Interner Serverfehler.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class OrderViewSet(viewsets.ModelViewSet):
