@@ -84,7 +84,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     serializer_class = OfferSerializer
     pagination_class = SmallResultSetPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
+    # filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
 
     def post():
         permission_classes = [IsBusinessUser]

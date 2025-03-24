@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_db.models import UserProfil, Offer, Order, Review, BaseInfo
+from coderr_db.models import UserProfil, Offer, Order, Review, BaseInfo, OfferDetail
 from django.contrib.auth.models import User
 
 
@@ -70,6 +70,13 @@ class OfferSerializer(serializers.ModelSerializer):
         model = Offer
         fields = '__all__'
 
+    def create(self, validated_data):
+        details_data = validated_data.pop('details')
+        offer = Offer.objects.create(validated_data)
+        for detail_data in details_data:
+            OfferDetail.objects.create(offer=offer, **detail_data)
+        return offer
+    
 
 class OfferHyperlinkedSerializer(OfferSerializer, serializers.HyperlinkedModelSerializer):
     
@@ -77,6 +84,12 @@ class OfferHyperlinkedSerializer(OfferSerializer, serializers.HyperlinkedModelSe
         model = Offer
         fields = '__all__'
 
+
+class OfferDetailSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = OfferDetail
+        fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
     

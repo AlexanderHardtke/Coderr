@@ -1,5 +1,6 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
+
 class IsOwnerOrAdmin(BasePermission):
 
     def has_object_permission(self, request, view, obj):
@@ -9,17 +10,17 @@ class IsOwnerOrAdmin(BasePermission):
             return bool(request.user and request.user.is_superuser)
         else:
             return bool(request.user and request.user == obj.user)
-        
+
 
 class IsBusinessUser(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.method == 'POST':
-            return bool(request.user and request.user == obj.user)
-        
+            return bool(request.user.userprofil.type == 'business')
+
 
 class IsCustomerUser(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.method == 'POST':
-            return bool(request.user and request.user == obj.user)
+            return bool(request.user.userprofil.type == 'customer')

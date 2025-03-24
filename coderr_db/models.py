@@ -37,7 +37,7 @@ class Offer(models.Model):
         UserProfil, on_delete=models.CASCADE, unique=True
     )
     title = models.CharField(max_length=50)
-    image = models.CharField(max_length=50, blank=True)
+    image = models.CharField(max_length=50, blank=True, null=True)
     description = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
