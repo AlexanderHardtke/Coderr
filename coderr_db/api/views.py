@@ -79,8 +79,9 @@ class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     # pagination_class = SmallResultSetPagination
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = []
+    ordering_fields = ['details__updated_at', 'details__price']
     
     def list(self, request):
         queryset = self.get_queryset()
@@ -101,7 +102,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
         delivery_param = self.request.query_params.get('max_delivery_time', None)
         if delivery_param is not None:
-            queryset = queryset.filter(user__id=delivery_param)
+            queryset = queryset.filter(details__delivery_time_in_days__lte=delivery_param)
 
         return queryset
     
