@@ -1,4 +1,4 @@
-from rest_framework import views, generics, status, filters, viewsets, mixins
+from rest_framework import views, generics, status, filters, viewsets, mixins, serializers
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -79,15 +79,17 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 
 
 class OfferViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    pagination_class = SmallResultSetPagination
-    filter_backends = [DjangoFilterBackend]
+    # pagination_class = SmallResultSetPagination
+    # filter_backends = [DjangoFilterBackend]
     # filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
 
-    def post():
+    def perform_create(self, serializer):
+        user = self.request.user.userprofil 
         permission_classes = [IsBusinessUser]
+        serializer.save(user=user)
 
     def patch():
         permission_classes = [IsOwnerOrAdmin]

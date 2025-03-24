@@ -33,8 +33,8 @@ class UserProfil(models.Model):
 
 
 class Offer(models.Model):
-    user = models.OneToOneField(
-        UserProfil, on_delete=models.CASCADE, unique=True
+    user = models.ForeignKey(
+        UserProfil, on_delete=models.CASCADE, related_name="offers"
     )
     title = models.CharField(max_length=50)
     image = models.CharField(max_length=50, blank=True, null=True)
@@ -45,7 +45,7 @@ class Offer(models.Model):
 
 class OfferDetail(models.Model):
     offer = models.ForeignKey(
-        Offer, related_name="details", on_delete=models.CASCADE
+        Offer, related_name="details", on_delete=models.CASCADE, default=""
     )
     title = models.CharField(max_length=50)
     revisions = models.PositiveIntegerField(default=0)
@@ -57,7 +57,7 @@ class OfferDetail(models.Model):
         ("standard", "Standard"),
         ("premium", "Premium")
     ])
-    url = models.URLField()
+    url = models.URLField(blank=True)
 
 
 class Order(models.Model):

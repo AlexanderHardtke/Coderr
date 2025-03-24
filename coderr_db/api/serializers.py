@@ -62,17 +62,27 @@ class UserProfilCustomerSerializer(serializers.ModelSerializer):
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'uploaded_at', 'type']
 
 
+class OfferDetailSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = OfferDetail
+        fields = '__all__'
+
+
 class OfferSerializer(serializers.ModelSerializer):
 
-    details = serializers.StringRelatedField(many=True, read_only=True)
+    details = OfferDetailSerializer(many=True)
     
     class Meta:
         model = Offer
         fields = '__all__'
+        extra_kwargs = {
+            "user": {"required": False}
+        }
 
     def create(self, validated_data):
         details_data = validated_data.pop('details')
-        offer = Offer.objects.create(validated_data)
+        offer = Offer.objects.create(**validated_data)
         for detail_data in details_data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
@@ -84,12 +94,6 @@ class OfferHyperlinkedSerializer(OfferSerializer, serializers.HyperlinkedModelSe
         model = Offer
         fields = '__all__'
 
-
-class OfferDetailSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = OfferDetail
-        fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
     
