@@ -66,9 +66,9 @@ class OfferDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OfferDetail
-        fields = '__all__'
+        exclude = ['url', 'offer']
 
-
+        
 class OfferSerializer(serializers.ModelSerializer):
 
     details = OfferDetailSerializer(many=True)

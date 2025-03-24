@@ -12,7 +12,7 @@ from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review, Base
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
     UserProfilCustomerSerializer, OfferSerializer, OrderSerializer,
-    Reviewserializer, BaseInfoSerializer
+    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer
 )
 
 
@@ -79,12 +79,28 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 
 
 class OfferViewSet(viewsets.ModelViewSet):
-    # permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     # pagination_class = SmallResultSetPagination
     # filter_backends = [DjangoFilterBackend]
     # filterset_fields = ['creator_id', 'min_price', 'max_delivery_time', 'ordering', 'search', 'page_size']
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         user = self.request.user.userprofil 
@@ -96,6 +112,19 @@ class OfferViewSet(viewsets.ModelViewSet):
 
     def delete():
         permission_classes = [IsOwnerOrAdmin]
+
+
+class OfferDetailView(APIView):
+    permission_classes = [AllowAny]
+    queryset = OfferDetail.objects.all()
+
+    def get(self, request, pk, format=None):
+        try:
+            offer = OfferDetail.objects.get(pk=pk)
+            serializer = OfferDetailSerializer(offer)
+            return Response(serializer.data)
+        except Offer.DoesNotExist:
+            return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class OrderViewSet(viewsets.ModelViewSet):
