@@ -75,22 +75,28 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 
 
 class OfferViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     pagination_class = SmallResultSetPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
     ordering_fields = ['details__updated_at', 'details__price']
-    
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsBusinessUser()]
+        else:
+            return [IsOwnerOrAdmin()]
+
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = OfferGetSerializer(queryset, many=True, context={'request': request})
+        serializer = OfferGetSerializer(
+            queryset, many=True, context={'request': request})
         return Response(serializer.data)
-    
+
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = OfferGetSerializer(instance, context={'request': request})
+        queryset = self.get_object()
+        serializer = OfferGetSerializer(queryset, context={'request': request})
         return Response(serializer.data)
 
     def get_queryset(self):
@@ -105,22 +111,17 @@ class OfferViewSet(viewsets.ModelViewSet):
             price_param = float(price_param)
             queryset = queryset.filter(details__price__lte=price_param)
 
-        delivery_param = self.request.query_params.get('max_delivery_time', None)
+        delivery_param = self.request.query_params.get(
+            'max_delivery_time', None)
         if delivery_param is not None:
-            queryset = queryset.filter(details__delivery_time_in_days__lte=delivery_param)
+            queryset = queryset.filter(
+                details__delivery_time_in_days__lte=delivery_param)
 
         return queryset
-    
+
     def perform_create(self, serializer):
-        user = self.request.user.userprofil 
-        permission_classes = [IsBusinessUser]
+        user = self.request.user.userprofil
         serializer.save(user=user)
-
-    def patch():
-        permission_classes = [IsOwnerOrAdmin]
-
-    def delete():
-        permission_classes = [IsOwnerOrAdmin]
 
 
 class OfferDetailView(APIView):
