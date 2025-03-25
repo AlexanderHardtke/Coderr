@@ -91,9 +91,7 @@ class OfferSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         details_data = validated_data.pop('details', None)
-
         instance = super().update(instance, validated_data)
-
         if details_data:
             for attr, value in details_data.items():
                 setattr(instance.details, attr, value)
