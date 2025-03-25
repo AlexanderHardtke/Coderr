@@ -81,6 +81,10 @@ class OfferViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
     ordering_fields = ['details__updated_at', 'details__price']
+    allowed_query_params = {
+        'creator_id', 'min_price',
+        'max_delivery_time', 'search', 'ordering'
+    }
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -89,6 +93,13 @@ class OfferViewSet(viewsets.ModelViewSet):
             return [IsOwnerOrAdmin()]
 
     def list(self, request):
+        query_params = set(request.query_params.keys())
+        invalid_params = query_params - self.allowed_query_params
+        if invalid_params:
+            return Response(
+                {"error": "Ungültige Anfrageparameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         queryset = self.filter_queryset(self.get_queryset())
         serializer = OfferGetSerializer(
             queryset, many=True, context={'request': request})
