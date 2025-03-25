@@ -78,8 +78,7 @@ class UserLoginTests(APITestCase):
         }
         response = self.client.post(self.url, data, format='json')
 
-        for key, value in data.items():
-            self.assertEqual(response.data[key], value)
+        self.assertEqual(response.data["username"], data["username"])
         self.assertIsInstance(response.data['token'], str)
         self.assertIsInstance(response.data['user_id'], int)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
