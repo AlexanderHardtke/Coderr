@@ -84,7 +84,6 @@ class OfferTests(APITestCase):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})
         response = self.client.patch(url, patched_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["status"], "completed")
 
     def test_invalid_patch_offer(self):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})

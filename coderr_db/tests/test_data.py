@@ -40,25 +40,30 @@ new_offer_data = {
 }
 
 patched_offer_data = {
-    "title": "patched Grafikdesign-Paket",
-    "description": "Ein umfassendes patched Grafikdesign-Paket für Unternehmen.",
-    "details": [
-        {
-            "title": "Zweites patched Basic Design",
-            "revisions": 20,
-            "delivery_time_in_days": 50,
-            "price": 1000,
-            "features": ["patched Logo Design", "patched Visitenkarte"],
-        }
-    ]
+  "title": "Updated Grafikdesign-Paket",
+  "details": [
+    {
+      "title": "Basic Design Updated",
+      "revisions": 3,
+      "delivery_time_in_days": 6,
+      "price": 120,
+      "features": [
+        "Logo Design",
+        "Flyer"
+      ],
+      "offer_type": "basic"
+    }
+  ]
 }
 
 invalid_offer_data = {
-    "id": 111,
-    "customer_user": 1,
-    "business_user": 2,
-    "created_at": "2024-09-29T10:00:00Z",
-    "updated_at": "2024-09-30T15:00:00Z"
+  "title": "Updated Grafikdesign-Paket",
+  "details": [
+    {
+      "title": "Basic Design Updated",
+      "offer_type": "error"
+    }
+  ]
 }
 
 new_review_data = {
