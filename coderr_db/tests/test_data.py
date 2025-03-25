@@ -54,7 +54,7 @@ patched_offer_data = {
 }
 
 invalid_offer_data = {
-    "id": 1,
+    "id": 111,
     "customer_user": 1,
     "business_user": 2,
     "created_at": "2024-09-29T10:00:00Z",

@@ -82,25 +82,57 @@ class OfferSerializer(serializers.ModelSerializer):
             "user": {"required": False}
         }
 
+    def validate(self, data):
+        data = super().validate(data)
+        if 'details' in data:
+            valid_offer_types = {'basic', 'standard', 'premium'}
+            details_data = data['details']
+            for detail_data in details_data:
+                offer_type = detail_data.get('offer_type')
+                if offer_type is None:
+                    raise serializers.ValidationError({
+                        'details': 'Ungültige Anfragedaten oder unvollständige Details.'
+                    })
+                if offer_type not in valid_offer_types:
+                    raise serializers.ValidationError({
+                        'details': 'Ungültige Anfragedaten oder unvollständige Details.'
+                    })
+        
+        return data
+
     def create(self, validated_data):
-        details_data = validated_data.pop('details')
+        data = validated_data.pop('details')
         offer = Offer.objects.create(**validated_data)
-        for detail_data in details_data:
+        for detail_data in data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
     
     def update(self, instance, validated_data):
-        details_data = validated_data.pop('details', None)
-        instance = super().update(instance, validated_data)
-        if details_data:
-            for attr, value in details_data.items():
-                setattr(instance.details, attr, value)
-            instance.details.save()
+        instance.title = validated_data.get('title', instance.title)
+        instance.image = validated_data.get('image', instance.image)
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+
+        if 'details' in validated_data:
+            details = instance.details.all()
+            existing_details = {detail.offer_type: detail for detail in details}
+            data = validated_data['details']
+            
+            for detail_data in data:
+                offer_type = detail_data.get('offer_type')
+                if offer_type in existing_details:
+                    detail_instance = existing_details[offer_type]
+                    for attr, value in detail_data.items():
+                        setattr(detail_instance, attr, value)
+                    detail_instance.save()
+                else:
+                    OfferDetail.objects.create(offer=instance, **detail_data)
 
         return instance
 
 
 class OfferGetSerializer(serializers.ModelSerializer):
+
     details = serializers.SerializerMethodField()
 
     class Meta:

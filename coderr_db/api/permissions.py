@@ -11,7 +11,7 @@ class IsOwnerOrAdmin(BasePermission):
 
 class IsBusinessUser(BasePermission):
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.method == 'POST':
             return bool(request.user.userprofil.type == 'business')
 

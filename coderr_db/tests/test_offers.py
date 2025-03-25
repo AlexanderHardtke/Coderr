@@ -148,7 +148,7 @@ class OfferTests(APITestCase):
         url = reverse('offerdetails-detail', kwargs={'pk': offer_detail})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsInstance(response.data['price'], int)
+        self.assertIsInstance(float(response.data['price']), float)
 
     def test_unauthorized_get_offer_detail(self):
         unauthorized_token = 'unauthorized token'
