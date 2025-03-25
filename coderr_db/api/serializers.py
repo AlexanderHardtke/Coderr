@@ -90,7 +90,7 @@ class OfferSerializer(serializers.ModelSerializer):
         return offer
 
 
-class OfferListSerializer(serializers.ModelSerializer):
+class OfferGetSerializer(serializers.ModelSerializer):
     details = serializers.SerializerMethodField()
 
     class Meta:

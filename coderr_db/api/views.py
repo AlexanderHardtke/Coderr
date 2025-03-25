@@ -12,7 +12,7 @@ from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review, Base
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
     UserProfilCustomerSerializer, OfferSerializer, OrderSerializer,
-    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer, OfferListSerializer
+    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer, OfferGetSerializer
 )
 
 
@@ -85,7 +85,12 @@ class OfferViewSet(viewsets.ModelViewSet):
     
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = OfferListSerializer(queryset, many=True, context={'request': request})
+        serializer = OfferGetSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = OfferGetSerializer(instance, context={'request': request})
         return Response(serializer.data)
 
     def get_queryset(self):
