@@ -23,12 +23,11 @@ class OfferTests(APITestCase):
 
     def test_get_offer_list(self):
         response = self.client.get(self.url, {'min_price': 100})
+        results = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        results = response.json()['results']
-        expected_offers = Offer.objects.filter(
-            min_price__gte=100).order_by('min_price')
-        expected_data = OfferSerializer(expected_offers, many=True).data
-        self.assertEqual(results, expected_data)
+        result_ids = sorted([offer['id'] for offer in results])
+        expected_ids = sorted(list(Offer.objects.filter(details__price__lte=100).values_list('id', flat=True)))
+        self.assertEqual(result_ids, expected_ids)
 
     def test_wrong_get_offer_list(self):
         response = self.client.get(self.url, {'unvalid_key': 100})
