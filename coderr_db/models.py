@@ -63,11 +63,6 @@ class OfferDetail(models.Model):
     ])
     url = models.URLField(blank=True)
 
-    def save(self, *args, **kwargs):
-        if self.offer and not self.business_user:
-            self.business_user = self.offer.user
-        super().save(*args, **kwargs)
-
 
 class Order(models.Model):
     customer_user = models.ForeignKey(

@@ -105,9 +105,10 @@ class OfferSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         data = validated_data.pop('details')
+        user = validated_data['user']
         offer = Offer.objects.create(**validated_data)
         for detail_data in data:
-            OfferDetail.objects.create(offer=offer, **detail_data)
+            OfferDetail.objects.create(offer=offer, business_user=user, **detail_data)
         return offer
 
     def update(self, instance, validated_data):
