@@ -160,11 +160,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Setze den aktuellen Benutzer als customer_user, falls nicht angegeben
         if 'customer_user_id' not in serializer.validated_data:
             serializer.validated_data['customer_user'] = request.user
 
-        # Erstelle die Bestellung
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
@@ -174,7 +172,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         )
 
     def get_queryset(self):
-        # Nur Bestellungen des aktuellen Benutzers anzeigen (oder alle für Admins)
         user = self.request.user
         if user.is_staff:
             return Order.objects.all()
