@@ -68,7 +68,7 @@ class OfferDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfferDetail
-        exclude = ['url', 'offer']
+        exclude = ['url', 'offer', 'business_user']
 
 
 class OfferSerializer(serializers.ModelSerializer):
@@ -97,7 +97,7 @@ class OfferSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError({
                         'details': 'Ungültige Anfragedaten oder unvollständige Details.'
                     })
-        
+
         return data
 
     def create(self, validated_data):
@@ -106,18 +106,20 @@ class OfferSerializer(serializers.ModelSerializer):
         for detail_data in data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
-    
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.image = validated_data.get('image', instance.image)
-        instance.description = validated_data.get('description', instance.description)
+        instance.description = validated_data.get(
+            'description', instance.description)
         instance.save()
 
         if 'details' in validated_data:
             details = instance.details.all()
-            existing_details = {detail.offer_type: detail for detail in details}
+            existing_details = {
+                detail.offer_type: detail for detail in details}
             data = validated_data['details']
-            
+
             for detail_data in data:
                 offer_type = detail_data.get('offer_type')
                 if offer_type in existing_details:
@@ -151,10 +153,33 @@ class OfferGetSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    offer_detail_id = serializers.IntegerField(write_only=True, required=True)
 
     class Meta:
         model = Order
         fields = '__all__'
+        extra_kwargs = {
+            'offer_detail': {'required': False},
+            "customer_user": {"required": False},
+            "business_user": {"required": False}
+        }
+
+    def validate(self, data):
+        offer_detail_id = data.get('offer_detail_id')
+        if offer_detail_id is None:
+            raise serializers.ValidationError({
+                'offer_detail_id': 'Ungültige Anfragedaten, Angebots-ID fehlt.'
+            })
+
+        try:
+            offer_detail = OfferDetail.objects.get(id=offer_detail_id)
+        except OfferDetail.DoesNotExist:
+            raise serializers.ValidationError({
+                'offer_detail_id': 'Ungültige Angebots-ID. Das Angebot existiert nicht.'
+            })
+        
+        data = offer_detail
+        return data
 
 
 class Reviewserializer(serializers.ModelSerializer):

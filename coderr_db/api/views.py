@@ -156,14 +156,29 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    def post():
-        permission_classes = [IsCustomerUser]
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    def patch():
-        permission_classes = [IsOwnerOrAdmin]
+        # Setze den aktuellen Benutzer als customer_user, falls nicht angegeben
+        if 'customer_user_id' not in serializer.validated_data:
+            serializer.validated_data['customer_user'] = request.user
 
-    def delete():
-        permission_classes = [IsOwnerOrAdmin]
+        # Erstelle die Bestellung
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+    def get_queryset(self):
+        # Nur Bestellungen des aktuellen Benutzers anzeigen (oder alle für Admins)
+        user = self.request.user
+        if user.is_staff:
+            return Order.objects.all()
+        return Order.objects.filter(customer_user=user)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

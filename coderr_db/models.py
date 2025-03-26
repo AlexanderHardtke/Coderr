@@ -45,6 +45,9 @@ class Offer(models.Model):
 
 
 class OfferDetail(models.Model):
+    business_user = models.ForeignKey(
+        UserProfil, on_delete=models.CASCADE, related_name="offers"
+    )
     offer = models.ForeignKey(
         Offer, related_name="details", on_delete=models.CASCADE, default=""
     )
@@ -63,21 +66,15 @@ class OfferDetail(models.Model):
 
 class Order(models.Model):
     customer_user = models.ForeignKey(
-        User, related_name="orders", on_delete=models.CASCADE
+        UserProfil, on_delete=models.CASCADE, related_name="orders"
     )
-    business_user = models.ForeignKey(
-        User, related_name="offers", on_delete=models.CASCADE
-    )
-    title = models.CharField(max_length=50)
-    revisions = models.PositiveIntegerField(default=0)
+    business_user = models.ForeignKey(OfferDetail, related_name="business_user", on_delete=models.CASCADE)
+    title = models.ForeignKey(OfferDetail, related_name="title", on_delete=models.CASCADE)
+    revisions = models.ForeignKey(OfferDetail, related_name="revisions", on_delete=models.CASCADE)
     delivery_time_in_days = models.PositiveIntegerField(blank=False)
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=False)
-    features = models.JSONField(default=list)
-    offer_type = models.CharField(max_length=20, default="basic", choices=[
-        ("basic", "Basic"),
-        ("standard", "Standard"),
-        ("premium", "Premium"),
-    ])
+    features = models.ForeignKey(OfferDetail, related_name="features", on_delete=models.CASCADE)
+    offer_type = models.ForeignKey(OfferDetail, related_name="offer_type", on_delete=models.CASCADE)
     status = models.CharField(max_length=20, default="in_progress", choices=[
         ("pending", "Pending"),
         ("in_progress", "In Progress"),
