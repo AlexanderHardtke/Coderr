@@ -150,32 +150,25 @@ class OfferDetailView(APIView):
             return Response({'detail': 'Das Angebotsdetail mit der angegebenen ID wurde nicht gefunden.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'detail': 'Interner Serverfehler.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated, IsCustomerUser]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not IsCustomerUser().has_permission(request, self):
+            return Response(
+                {'detail': 'Nur Kunden dürfen Bestellungen erstellen.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        return super().create(request, *args, **kwargs)
 
-        if 'customer_user_id' not in serializer.validated_data:
-            serializer.validated_data['customer_user'] = request.user
-
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data,
-            status=status.HTTP_201_CREATED,
-            headers=headers
-        )
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_staff:
-            return Order.objects.all()
-        return Order.objects.filter(customer_user=user)
+    def perform_create(self, serializer):
+        if 'customer_user' not in serializer.validated_data:
+            serializer.validated_data['customer_user'] = self.request.user
+        serializer.save()
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

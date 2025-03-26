@@ -18,6 +18,7 @@ class IsBusinessUser(BasePermission):
 
 class IsCustomerUser(BasePermission):
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.method == 'POST':
-            return bool(request.user.userprofil.type == 'customer')
+            return hasattr(request.user, 'userprofil') and request.user.userprofil.type == 'customer'
+        return True

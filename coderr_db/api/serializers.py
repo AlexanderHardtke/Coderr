@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from coderr_db.models import UserProfil, Offer, Order, Review, BaseInfo, OfferDetail
 from django.contrib.auth.models import User
+from .permissions import IsCustomerUser
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -157,16 +158,38 @@ class OfferGetSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source="offer_detail.title", read_only=True)
+    revisions = serializers.IntegerField(source="offer_detail.revisions", read_only=True)
+    features = serializers.JSONField(source="offer_detail.features", read_only=True)
+    offer_type = serializers.CharField(source="offer_detail.offer_type", read_only=True)
     offer_detail_id = serializers.IntegerField(write_only=True, required=True)
 
     class Meta:
         model = Order
-        fields = '__all__'
-        extra_kwargs = {
-            'offer_detail': {'required': False},
-            "customer_user": {"required": False},
-            "business_user": {"required": False}
-        }
+        fields = [
+            "id",
+            "customer_user",
+            "business_user",
+            "title",
+            "revisions",
+            "delivery_time_in_days",
+            "price",
+            "features",
+            "offer_type",
+            "status",
+            "created_at",
+            "updated_at",
+            "offer_detail_id",
+        ]
+        read_only_fields = [
+            "customer_user",
+            "business_user",
+            "delivery_time_in_days",
+            "price",
+            "status",
+            "created_at",
+            "updated_at",
+        ]
 
     def validate(self, data):
         offer_detail_id = data.get('offer_detail_id')
@@ -182,8 +205,16 @@ class OrderSerializer(serializers.ModelSerializer):
                 'offer_detail_id': 'Ungültige Angebots-ID. Das Angebot existiert nicht.'
             })
         
-        data = offer_detail
+        data['offer_detail'] = offer_detail
+        data['business_user'] = offer_detail.business_user
+        data['delivery_time_in_days'] = offer_detail.delivery_time_in_days
+        data['price'] = offer_detail.price
         return data
+    
+    def create(self, validated_data):
+        if 'customer_user' not in validated_data:
+            validated_data['customer_user'] = self.context['request'].user.userprofil
+        return super().create(validated_data)
 
 
 class Reviewserializer(serializers.ModelSerializer):
