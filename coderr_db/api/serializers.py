@@ -4,12 +4,12 @@ from django.contrib.auth.models import User
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-
+    type = serializers.ChoiceField(choices=UserProfil.CATEGORY_CHOICES, write_only=True)
     repeated_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'repeated_password']
+        fields = ['username', 'email', 'password', 'repeated_password', 'type']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -17,25 +17,28 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def save(self):
         pw = self.validated_data['password']
         repeated_pw = self.validated_data['repeated_password']
+        user_type = self.validated_data.pop('type')
 
         if pw != repeated_pw:
             raise serializers.ValidationError(
-                {'error': 'passwords dont match'})
+                {'error': 'Passwörter stimmen nicht überein.'})
 
         if User.objects.filter(email=self.validated_data['email']).exists():
-            raise serializers.ValidationError({'error': 'email already used'})
+            raise serializers.ValidationError({'error': 'Email wird bereits verwendet.'})
 
         account = User(
             email=self.validated_data['email'],
             username=self.validated_data['username'],
         )
+        
         account.set_password(pw)
         account.save()
 
         UserProfil.objects.create(
             user=account,
             email=account.email,
-            username=account.username
+            username=account.username,
+            type=user_type, 
         )
 
         return account

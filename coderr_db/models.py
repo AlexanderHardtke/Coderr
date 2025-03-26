@@ -12,7 +12,7 @@ class UserProfil(models.Model):
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     type = models.CharField(
-        max_length=10, choices=CATEGORY_CHOICES, default='customer')
+        max_length=10, choices=CATEGORY_CHOICES, null=False, blank=False)
     email = models.EmailField(max_length=50, unique=True)
     first_name = models.CharField(max_length=25, blank=True)
     last_name = models.CharField(max_length=25, blank=True)
@@ -46,7 +46,7 @@ class Offer(models.Model):
 
 class OfferDetail(models.Model):
     business_user = models.ForeignKey(
-        UserProfil, on_delete=models.CASCADE, related_name="offer_details", null=True
+        UserProfil, on_delete=models.CASCADE, related_name="offer_details", null=True, blank=True
     )
     offer = models.ForeignKey(
         Offer, related_name="details", on_delete=models.CASCADE, default=""
@@ -62,6 +62,11 @@ class OfferDetail(models.Model):
         ("premium", "Premium")
     ])
     url = models.URLField(blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.offer and not self.business_user:
+            self.business_user = self.offer.user
+        super().save(*args, **kwargs)
 
 
 class Order(models.Model):
