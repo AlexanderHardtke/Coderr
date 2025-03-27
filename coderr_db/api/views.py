@@ -155,12 +155,7 @@ class OfferDetailView(APIView):
             return Response({'detail': 'Interner Serverfehler.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class OrderViewSet(
-        mixins.CreateModelMixin,
-        mixins.ListModelMixin,
-        mixins.UpdateModelMixin,
-        mixins.DestroyModelMixin,
-        viewsets.GenericViewSet):
+class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
@@ -171,6 +166,17 @@ class OrderViewSet(
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().create(request, *args, **kwargs)
+    
+    def partial_update(self, request, *args, **kwargs):
+        if "status" not in request.data or len(request.data) > 1:
+            return Response(
+                {"error": "Ungültiger Status oder unzulässige Felder in der Anfrage."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return super().partial_update(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response({"error": "Detailansicht nicht erlaubt."}, status=status.HTTP_403_FORBIDDEN)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

@@ -5,7 +5,8 @@ from .permissions import IsCustomerUser
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    type = serializers.ChoiceField(choices=UserProfil.CATEGORY_CHOICES, write_only=True)
+    type = serializers.ChoiceField(
+        choices=UserProfil.CATEGORY_CHOICES, write_only=True)
     repeated_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -25,13 +26,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 {'error': 'Passwörter stimmen nicht überein.'})
 
         if User.objects.filter(email=self.validated_data['email']).exists():
-            raise serializers.ValidationError({'error': 'Email wird bereits verwendet.'})
+            raise serializers.ValidationError(
+                {'error': 'Email wird bereits verwendet.'})
 
         account = User(
             email=self.validated_data['email'],
             username=self.validated_data['username'],
         )
-        
+
         account.set_password(pw)
         account.save()
 
@@ -39,7 +41,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             user=account,
             email=account.email,
             username=account.username,
-            type=user_type, 
+            type=user_type,
         )
 
         return account
@@ -109,7 +111,8 @@ class OfferSerializer(serializers.ModelSerializer):
         user = validated_data['user']
         offer = Offer.objects.create(**validated_data)
         for detail_data in data:
-            OfferDetail.objects.create(offer=offer, business_user=user, **detail_data)
+            OfferDetail.objects.create(
+                offer=offer, business_user=user, **detail_data)
         return offer
 
     def update(self, instance, validated_data):
@@ -159,9 +162,12 @@ class OfferGetSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="offer_detail.title", read_only=True)
-    revisions = serializers.IntegerField(source="offer_detail.revisions", read_only=True)
-    features = serializers.JSONField(source="offer_detail.features", read_only=True)
-    offer_type = serializers.CharField(source="offer_detail.offer_type", read_only=True)
+    revisions = serializers.IntegerField(
+        source="offer_detail.revisions", read_only=True)
+    features = serializers.JSONField(
+        source="offer_detail.features", read_only=True)
+    offer_type = serializers.CharField(
+        source="offer_detail.offer_type", read_only=True)
     offer_detail_id = serializers.IntegerField(write_only=True, required=True)
 
     class Meta:
@@ -185,12 +191,10 @@ class OrderSerializer(serializers.ModelSerializer):
             "customer_user",
             "delivery_time_in_days",
             "price",
-            "status",
             "created_at",
-            "updated_at",
         ]
 
-    def validate(self, data):
+    def validate_offer_detail_id(self, data):
         offer_detail_id = data.get('offer_detail_id')
         if offer_detail_id is None:
             raise serializers.ValidationError({
@@ -198,19 +202,20 @@ class OrderSerializer(serializers.ModelSerializer):
             })
 
         try:
-            offer_detail = OfferDetail.objects.get(id=offer_detail_id)
+            offer_detail = OfferDetail.objects.get(id=data)
         except OfferDetail.DoesNotExist:
-            raise serializers.ValidationError({
-                'offer_detail_id': 'Ungültige Angebots-ID. Das Angebot existiert nicht.'
-            })
-        
-        data['offer_detail'] = offer_detail
-        data['business_user'] = offer_detail.business_user
-        data['delivery_time_in_days'] = offer_detail.delivery_time_in_days
-        data['price'] = offer_detail.price
+            raise serializers.ValidationError(
+                "Ungültige Angebots-ID. Das Angebot existiert nicht."
+            )
+        self.context['offer_detail'] = offer_detail
         return data
-    
+
     def create(self, validated_data):
+        offer_detail = self.context['offer_detail']
+        validated_data['offer_detail'] = offer_detail
+        validated_data['business_user'] = offer_detail.business_user
+        validated_data['delivery_time_in_days'] = offer_detail.delivery_time_in_days
+        validated_data['price'] = offer_detail.price
         if 'customer_user' not in validated_data:
             validated_data['customer_user'] = self.context['request'].user.userprofil
         return super().create(validated_data)
