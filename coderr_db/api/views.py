@@ -77,7 +77,6 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    pagination_class = SmallResultSetPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
     ordering_fields = ['details__updated_at', 'details__price']
@@ -93,6 +92,7 @@ class OfferViewSet(viewsets.ModelViewSet):
             return [IsOwnerOrAdmin()]
 
     def list(self, request):
+        self.pagination_class = SmallResultSetPagination
         query_params = set(request.query_params.keys())
         invalid_params = query_params - self.allowed_query_params
         if invalid_params:
@@ -100,10 +100,12 @@ class OfferViewSet(viewsets.ModelViewSet):
                 {"error": "Ungültige Anfrageparameter."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = OfferGetSerializer(
-            queryset, many=True, context={'request': request})
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        
+        serializer = OfferGetSerializer(page, many=True, context={'request': request})
+        return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         queryset = self.get_object()
