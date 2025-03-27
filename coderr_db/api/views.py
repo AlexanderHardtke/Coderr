@@ -166,7 +166,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().create(request, *args, **kwargs)
-    
+
     def partial_update(self, request, *args, **kwargs):
         if "status" not in request.data or len(request.data) > 1:
             return Response(
@@ -177,6 +177,11 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         return Response({"error": "Detailansicht nicht erlaubt."}, status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
