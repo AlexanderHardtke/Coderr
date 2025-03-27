@@ -155,7 +155,6 @@ class OfferDetailView(APIView):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated, IsCustomerUser]
 
     def create(self, request, *args, **kwargs):
         if not IsCustomerUser().has_permission(request, self):
@@ -164,11 +163,6 @@ class OrderViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().create(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        if 'customer_user' not in serializer.validated_data:
-            serializer.validated_data['customer_user'] = self.request.user
-        serializer.save()
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
