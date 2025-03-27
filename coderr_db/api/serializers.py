@@ -205,17 +205,14 @@ class OrderSerializer(serializers.ModelSerializer):
             })
         
         data['offer_detail'] = offer_detail
-        print("Business User in validate:", offer_detail.business_user)
         data['business_user'] = offer_detail.business_user
         data['delivery_time_in_days'] = offer_detail.delivery_time_in_days
         data['price'] = offer_detail.price
         return data
     
     def create(self, validated_data):
-        print("Business User before create:", validated_data.get('business_user'))
         if 'customer_user' not in validated_data:
             validated_data['customer_user'] = self.context['request'].user.userprofil
-            validated_data['business_user'] = validated_data['offer_detail'].business_user
         return super().create(validated_data)
 
 
