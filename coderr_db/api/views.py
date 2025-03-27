@@ -103,8 +103,9 @@ class OfferViewSet(viewsets.ModelViewSet):
 
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        
-        serializer = OfferGetSerializer(page, many=True, context={'request': request})
+
+        serializer = OfferGetSerializer(
+            page, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
@@ -152,9 +153,14 @@ class OfferDetailView(APIView):
             return Response({'detail': 'Das Angebotsdetail mit der angegebenen ID wurde nicht gefunden.'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'detail': 'Interner Serverfehler.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
 
-class OrderViewSet(viewsets.ModelViewSet):
+
+class OrderViewSet(
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.UpdateModelMixin,
+        mixins.DestroyModelMixin,
+        viewsets.GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
