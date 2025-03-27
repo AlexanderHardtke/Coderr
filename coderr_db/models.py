@@ -89,7 +89,7 @@ class Review(models.Model):
         UserProfil, on_delete=models.CASCADE, related_name="received_reviews"
     )
     reviewer = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="given_reviews"
+        UserProfil, on_delete=models.CASCADE, related_name="given_reviews"
     )
     rating = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]

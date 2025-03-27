@@ -1,4 +1,4 @@
-from rest_framework import generics, status, filters, viewsets
+from rest_framework import generics, status, filters, viewsets, mixins
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -181,12 +181,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not request.user.is_staff:
             return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
-    
+
 
 class OrderCountBaseView(generics.RetrieveAPIView):
     serializer_class = OrderCountSerializer
     queryset = Order.objects.all()
-    
+
     def get_object(self):
         return {
             "order_count": self.get_queryset().filter(
@@ -194,16 +194,24 @@ class OrderCountBaseView(generics.RetrieveAPIView):
             ).count()
         }
 
+
 class OrderCountView(OrderCountBaseView):
     def get_queryset(self):
         return super().get_queryset().filter(status='in_progress')
+
 
 class CompletedOrderCountView(OrderCountBaseView):
     def get_queryset(self):
         return super().get_queryset().filter(status='completed')
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(
+        mixins.ListModelMixin,
+        mixins.CreateModelMixin,
+        mixins.UpdateModelMixin,
+        mixins.DestroyModelMixin,
+        viewsets.GenericViewSet
+):
     queryset = Review.objects.all()
     serializer_class = Reviewserializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -211,14 +219,26 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ordering_fields = ['updated_at', 'rating']
     ordering = ['rating']
 
-    def post():
-        permission_classes = [IsCustomerUser]
+    def create(self, request, *args, **kwargs):
+        if not IsCustomerUser().has_permission(request, self):
+            return Response(
+                {'detail': 'Nur Kunden dürfen Bewertungen erstellen.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        return super().create(request, *args, **kwargs)
 
-    def patch():
-        permission_classes = [IsOwnerOrAdmin]
+    def partial_update(self, request, *args, **kwargs):
+        if "rating" and "business_user" not in request.data:
+            return Response(
+                {"error": "Fehlerhafte Anfrage, Rating oder Geschäftskunde fehlt."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return super().partial_update(request, *args, **kwargs)
 
-    def delete():
-        permission_classes = [IsOwnerOrAdmin]
+    def destroy(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
 
 class BaseInfoView(generics.RetrieveAPIView):

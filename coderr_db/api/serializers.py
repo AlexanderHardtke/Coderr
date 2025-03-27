@@ -170,6 +170,40 @@ class OrderSerializer(serializers.ModelSerializer):
     offer_detail_id = serializers.IntegerField(write_only=True, required=True)
 
     class Meta:
+        model = Review
+        fields = [
+            "id",
+            "business_user",
+            "reviewer",
+            "rating",
+            "description",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "business_user",
+            "reviewer",
+            "created_at",
+        ]
+
+    def create(self, validated_data):
+        review_detail = self.context['offer_detail']
+        validated_data['offer_detail'] = review_detail
+        validated_data['business_user'] = review_detail.business_user
+        validated_data['delivery_time_in_days'] = review_detail.delivery_time_in_days
+        validated_data['price'] = review_detail.price
+        if 'customer_user' not in validated_data:
+            validated_data['customer_user'] = self.context['request'].user.userprofil
+        return super().create(validated_data)
+
+
+class OrderCountSerializer(serializers.Serializer):
+    order_count = serializers.IntegerField()
+
+
+class Reviewserializer(serializers.ModelSerializer):
+
+    class Meta:
         model = Order
         fields = [
             "id",
@@ -194,41 +228,20 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def validate_offer_detail_id(self, data):
-        offer_detail_id = data.get('offer_detail_id')
-        if offer_detail_id is None:
+        order_id = data.get('order_id')
+        if order_id is None:
             raise serializers.ValidationError({
-                'offer_detail_id': 'Ungültige Anfragedaten, Angebots-ID fehlt.'
+                'order_id': 'Ungültige Anfragedaten, Geschäftsbenutzers fehlt.'
             })
 
         try:
-            offer_detail = OfferDetail.objects.get(id=data)
-        except OfferDetail.DoesNotExist:
+            offer_detail = Order.objects.get(id=data)
+        except Order.DoesNotExist:
             raise serializers.ValidationError(
-                "Ungültige Angebots-ID. Das Angebot existiert nicht."
+                "Ungültige Geschäftsbenutzers-ID. Das Angebot existiert nicht."
             )
         self.context['offer_detail'] = offer_detail
         return data
-
-    def create(self, validated_data):
-        offer_detail = self.context['offer_detail']
-        validated_data['offer_detail'] = offer_detail
-        validated_data['business_user'] = offer_detail.business_user
-        validated_data['delivery_time_in_days'] = offer_detail.delivery_time_in_days
-        validated_data['price'] = offer_detail.price
-        if 'customer_user' not in validated_data:
-            validated_data['customer_user'] = self.context['request'].user.userprofil
-        return super().create(validated_data)
-
-
-class OrderCountSerializer(serializers.Serializer):
-    order_count = serializers.IntegerField()
-
-
-class Reviewserializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Review
-        fields = '__all__'
 
 
 class BaseInfoSerializer(serializers.ModelSerializer):
