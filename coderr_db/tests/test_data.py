@@ -100,6 +100,7 @@ def create_test_offers(user):
     )
     
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer1,
         title="Basic API",
         revisions=2,
@@ -109,6 +110,7 @@ def create_test_offers(user):
         offer_type="basic"
     )
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer1,
         title="Standard API",
         revisions=5,
@@ -118,6 +120,7 @@ def create_test_offers(user):
         offer_type="standard"
     )
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer1,
         title="Premium API",
         revisions=10,
@@ -128,6 +131,7 @@ def create_test_offers(user):
     )
     
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer2,
         title="Basic Design",
         revisions=2,
@@ -137,6 +141,7 @@ def create_test_offers(user):
         offer_type="basic"
     )
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer2,
         title="Standard Design",
         revisions=5,
@@ -146,6 +151,7 @@ def create_test_offers(user):
         offer_type="standard"
     )
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer2,
         title="Premium Design",
         revisions=10,
@@ -156,6 +162,7 @@ def create_test_offers(user):
     )
     
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer3,
         title="Android",
         revisions=2,
@@ -165,6 +172,7 @@ def create_test_offers(user):
         offer_type="basic"
     )
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer3,
         title="Apple-IOS",
         revisions=3,
@@ -174,6 +182,7 @@ def create_test_offers(user):
         offer_type="standard"
     )
     OfferDetail.objects.create(
+        business_user_id=user.id,
         offer=offer3,
         title="Android + Apple-IOS",
         revisions=6,
@@ -186,23 +195,17 @@ def create_test_offers(user):
     return [offer1, offer2, offer3]
 
 
-def create_test_orders():
+def create_test_orders(user):
+    offer_detail = OfferDetail.objects.first()
+
     return [
         Order.objects.create(
-            customer_user=1,
-            business_user=2,
-            title="Logo Design",
-            revisions=3,
-            delivery_time_in_days=5,
-            price=150,
-            features=[
-                "Logo Design",
-                "Visitenkarten"
-            ],
-            offer_type="basic",
-            status="in_progress",
-            created_at="2024-09-29T10:00:00Z",
-            updated_at="2024-09-30T12:00:00Z"
+            customer_user=user,
+            business_user=offer_detail.business_user,
+            offer_detail=offer_detail,
+            status="pending",
+            price=offer_detail.price,
+            delivery_time_in_days=offer_detail.delivery_time_in_days
         )
     ]
 
