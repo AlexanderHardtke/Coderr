@@ -1,18 +1,17 @@
-from rest_framework import views, generics, status, filters, viewsets, mixins, serializers
+from rest_framework import generics, status, filters, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django_filters.rest_framework import DjangoFilterBackend
-
 from .pagination import SmallResultSetPagination
 from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser
 from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review, BaseInfo
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
     UserProfilCustomerSerializer, OfferSerializer, OrderSerializer,
-    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer, OfferGetSerializer
+    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer, OfferGetSerializer, OrderCountSerializer
 )
 
 
@@ -182,6 +181,26 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not request.user.is_staff:
             return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
+    
+
+class OrderCountBaseView(generics.RetrieveAPIView):
+    serializer_class = OrderCountSerializer
+    queryset = Order.objects.all()
+    
+    def get_object(self):
+        return {
+            "order_count": self.get_queryset().filter(
+                business_user=self.kwargs["pk"]
+            ).count()
+        }
+
+class OrderCountView(OrderCountBaseView):
+    def get_queryset(self):
+        return super().get_queryset().filter(status='in_progress')
+
+class CompletedOrderCountView(OrderCountBaseView):
+    def get_queryset(self):
+        return super().get_queryset().filter(status='completed')
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

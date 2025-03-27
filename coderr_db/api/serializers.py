@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from coderr_db.models import UserProfil, Offer, Order, Review, BaseInfo, OfferDetail
 from django.contrib.auth.models import User
-from .permissions import IsCustomerUser
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -219,6 +218,10 @@ class OrderSerializer(serializers.ModelSerializer):
         if 'customer_user' not in validated_data:
             validated_data['customer_user'] = self.context['request'].user.userprofil
         return super().create(validated_data)
+
+
+class OrderCountSerializer(serializers.Serializer):
+    order_count = serializers.IntegerField()
 
 
 class Reviewserializer(serializers.ModelSerializer):
