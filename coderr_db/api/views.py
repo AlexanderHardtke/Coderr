@@ -226,6 +226,9 @@ class ReviewViewSet(
                 status=status.HTTP_401_UNAUTHORIZED
             )
         return super().create(request, *args, **kwargs)
+    
+    def perform_create(self, serializer):
+        serializer.save(reviewer=self.request.user)
 
     def partial_update(self, request, *args, **kwargs):
         if "rating" and "business_user" not in request.data:
