@@ -77,7 +77,6 @@ class Order(models.Model):
     delivery_time_in_days = models.PositiveIntegerField(blank=False)
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=False)
     status = models.CharField(max_length=20, default="in_progress", choices=[
-        ("pending", "Pending"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
         ("canceled", "Canceled"),

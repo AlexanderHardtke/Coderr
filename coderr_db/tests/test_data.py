@@ -203,7 +203,7 @@ def create_test_orders(user):
             customer_user=user,
             business_user=offer_detail.business_user,
             offer_detail=offer_detail,
-            status="pending",
+            status="in_progress",
             price=offer_detail.price,
             delivery_time_in_days=offer_detail.delivery_time_in_days
         )
