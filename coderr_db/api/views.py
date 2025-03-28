@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import SmallResultSetPagination
-from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser
+from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser, IsOwnerOrAdminOfReview
 from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review, BaseInfo
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
@@ -218,6 +218,14 @@ class ReviewViewSet(
     ordering_fields = ['updated_at', 'rating']
     ordering = ['updated_at']
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [IsAuthenticated()]
+        if self.request.method == 'POST':
+            return [IsCustomerUser()]
+        else:
+            return [IsOwnerOrAdminOfReview()]
+
     def get_queryset(self):
         queryset = super().get_queryset()
         business_user_id = self.request.query_params.get("business_user_id", None)
@@ -251,8 +259,8 @@ class ReviewViewSet(
         return super().partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        if not request.user.is_staff:
-            return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
+        instance = self.get_object() 
+        self.check_object_permissions(request, instance)
         return super().destroy(request, *args, **kwargs)
 
 
