@@ -215,9 +215,19 @@ class ReviewViewSet(
     queryset = Review.objects.all()
     serializer_class = Reviewserializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['business_user_id', 'reviewer_id', 'ordering']
     ordering_fields = ['updated_at', 'rating']
-    ordering = ['rating']
+    ordering = ['updated_at']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        business_user_id = self.request.query_params.get("business_user_id", None)
+        reviewer_id = self.request.query_params.get("reviewer_id", None)
+
+        if business_user_id:
+            queryset = queryset.filter(business_user=business_user_id)
+        if reviewer_id:
+            queryset = queryset.filter(reviewer=reviewer_id)
+        return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
