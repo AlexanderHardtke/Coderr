@@ -194,8 +194,7 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def validate_offer_detail_id(self, data):
-        offer_detail_id = data.get('offer_detail_id')
-        if offer_detail_id is None:
+        if data is None and not int:
             raise serializers.ValidationError({
                 'offer_detail_id': 'Ungültige Anfragedaten, Angebots-ID fehlt.'
             })
