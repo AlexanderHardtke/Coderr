@@ -256,6 +256,7 @@ class Reviewserializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         request = self.context.get('request')
+        print(request.user.userprofil)
         validated_data['reviewer'] = request.user.userprofil
         return super().create(validated_data)
 
