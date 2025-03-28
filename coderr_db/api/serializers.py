@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_db.models import UserProfil, Offer, Order, Review, BaseInfo, OfferDetail
+from coderr_db.models import UserProfil, Offer, Order, Review, OfferDetail
 from django.contrib.auth.models import User
 
 
