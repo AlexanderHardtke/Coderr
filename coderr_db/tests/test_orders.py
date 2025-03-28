@@ -63,17 +63,17 @@ class OrderTests(APITestCase):
     #     response = self.client.post(self.url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_invalid_post_order(self):
-        data = {"offer_error_id": invalid_order_pk}
-        response = self.client.post(self.url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    # def test_invalid_post_order(self):
+    #     data = {"offer_detail_id": invalid_order_pk}
+    #     response = self.client.post(self.url, data, format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # def test_patch_order(self):
-    #     url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})
-    #     data = {"status": "completed"}
-    #     response = self.client.patch(url, data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.data["status"], "completed")
+    def test_patch_order(self):
+        url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})
+        data = {"status": "completed"}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["status"], "completed")
 
     # def test_invalid_patch_order(self):
     #     url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})

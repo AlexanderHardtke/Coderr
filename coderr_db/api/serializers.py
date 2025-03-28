@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from coderr_db.models import UserProfil, Offer, Order, Review, OfferDetail
 from django.contrib.auth.models import User
+from rest_framework.exceptions import NotFound
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -202,8 +203,8 @@ class OrderSerializer(serializers.ModelSerializer):
         try:
             offer_detail = OfferDetail.objects.get(id=data)
         except OfferDetail.DoesNotExist:
-            raise serializers.ValidationError(
-                "Ungültige Angebots-ID. Das Angebot existiert nicht."
+            raise NotFound(
+                "Das angegebene Angebotsdetail wurde nicht gefunden."
             )
         self.context['offer_detail'] = offer_detail
         return data
