@@ -225,6 +225,8 @@ class OrderCountSerializer(serializers.Serializer):
 
 
 class Reviewserializer(serializers.ModelSerializer):
+    business_user = serializers.PrimaryKeyRelatedField(queryset=UserProfil.objects.all())
+    reviewer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Review
@@ -238,14 +240,25 @@ class Reviewserializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = [
-            "business_user",
+            "reviewer",
             "created_at",
+            "updated_at",
         ]
 
     def validate_rating(self, value):
         if value < 1 or value > 5:
-            raise serializers.ValidationError("Rating must be between 1 and 5")
+            raise serializers.ValidationError("Bewertung muss zwischen 1 und 5 sein.")
         return value
+    
+    def validate_business_user(self, value):
+        if not UserProfil.objects.filter(pk=value.pk).exists():
+            raise serializers.ValidationError("Dieser Business-User existiert nicht.")
+        return value
+    
+    def create(self, validated_data):
+        request = self.context.get('request')
+        validated_data['reviewer'] = request.user.userprofil
+        return super().create(validated_data)
 
 
 class BaseInfoSerializer(serializers.ModelSerializer):

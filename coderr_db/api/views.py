@@ -219,6 +219,11 @@ class ReviewViewSet(
     ordering_fields = ['updated_at', 'rating']
     ordering = ['rating']
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
     def create(self, request, *args, **kwargs):
         if not IsCustomerUser().has_permission(request, self):
             return Response(
@@ -226,9 +231,6 @@ class ReviewViewSet(
                 status=status.HTTP_401_UNAUTHORIZED
             )
         return super().create(request, *args, **kwargs)
-    
-    def perform_create(self, serializer):
-        serializer.save(reviewer=self.request.user)
 
     def partial_update(self, request, *args, **kwargs):
         if "rating" and "business_user" not in request.data:
