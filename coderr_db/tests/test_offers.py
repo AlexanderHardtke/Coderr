@@ -1,10 +1,9 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase, APIClient, APITestCase
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from coderr_db.models import Offer
-from coderr_db.api.serializers import OfferSerializer
 from .test_data import create_business_user, create_customer_user, create_test_offers, new_offer_data, invalid_offer_pk, patched_offer_data, invalid_offer_data, offer_detail
 
 
@@ -25,7 +24,7 @@ class OfferTests(APITestCase):
         response = self.client.get(self.url, {'min_price': 100})
         results = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        result_ids = sorted([offer['id'] for offer in results])
+        result_ids = [offer['id'] for offer in results['results']]
         expected_ids = sorted(list(Offer.objects.filter(details__price__lte=100).values_list('id', flat=True)))
         self.assertEqual(result_ids, expected_ids)
 
@@ -80,18 +79,17 @@ class OfferTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_offer(self):
+    def test_patch_offer(self):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})
-        print(self.user_offers[0].pk)
         response = self.client.patch(url, patched_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_invalid_update_offer(self):
+    def test_invalid_patch_offer(self):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})
         response = self.client.patch(url, invalid_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_unauthorized_update_offer(self):
+    def test_unauthorized_patch_offer(self):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})
         self.user = User.objects.create_user(
             username='customer', password='customerpassword'

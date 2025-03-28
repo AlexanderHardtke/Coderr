@@ -9,9 +9,9 @@ from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 
 router = routers.SimpleRouter()
-router.register(r'offers', OfferViewSet)
-router.register(r'orders', OrderViewSet)
-router.register(r'reviews', ReviewViewSet)
+router.register(r'offers', OfferViewSet, basename='offers')
+router.register(r'orders', OrderViewSet, basename='orders')
+router.register(r'reviews', ReviewViewSet, basename='reviews')
 
 urlpatterns = [
     path('', include(router.urls)),

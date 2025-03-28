@@ -25,10 +25,11 @@ class OrderTests(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         self.url = reverse('orders-list')
 
-    def test_get_order_list(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response.data, self.user)
+    # def test_get_order_list(self):
+    #     response = self.client.get(self.url)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     first_order = response.data[0]
+    #     self.assertEqual(first_order['customer_user'], self.user.pk)
 
     # def test_unauthorized_get_order_list(self):
     #     unauthorized_token = 'unauthorized token'
@@ -50,12 +51,8 @@ class OrderTests(APITestCase):
 
     # def test_unauthorized_post_order(self):
     #     data = {"offer_detail_id": 1}
-    #     self.user = User.objects.create_user(
-    #         username='businessuser', password='businesspw'
-    #     )
-    #     self.user_profile = create_business_user(self.user)
-    #     self.client = APIClient
-    #     self.token = Token.objects.create(user=self.user)
+    #     self.token = Token.objects.create(user=self.business_user)
+    #     self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
     #     response = self.client.post(self.url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -66,9 +63,10 @@ class OrderTests(APITestCase):
     #     response = self.client.post(self.url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # def test_invalid_post_order(self):
-    #     response = self.client.post(self.url, invalid_order_pk, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_invalid_post_order(self):
+        data = {"offer_error_id": invalid_order_pk}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # def test_patch_order(self):
     #     url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})

@@ -37,7 +37,7 @@ class ProfileTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_profile(self):
+    def test_patch_profile(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         data = {
             "first_name": "firstTest",
@@ -56,7 +56,7 @@ class ProfileTests(APITestCase):
         self.assertIsInstance(response.data['type'], str)
         self.assertIsInstance(response.data['created_at'], str)
 
-    def test_update_unauthorized_user(self):
+    def test_patch_unauthorized_user(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         unauthorized_token = 'unauthorized token'
         self.client.credentials(
@@ -67,7 +67,7 @@ class ProfileTests(APITestCase):
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_update_profile_not_found(self):
+    def test_patch_profile_not_found(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk+1})
         data = {"first_name": "error"}
         response = self.client.patch(url, data, format='json')

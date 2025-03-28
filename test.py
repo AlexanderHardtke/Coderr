@@ -6,6 +6,6 @@
 
 # test_registration_login OK
 # test_profiles FAILED OK
-# test_offers FAILED (errors=1)
+# test_offers FAILED OK
 # test_orders FAILED (errors=1)
 # test_reviews_base_info FAILED (errors=14)
