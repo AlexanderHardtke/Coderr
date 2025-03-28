@@ -97,11 +97,3 @@ class Review(models.Model):
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
-class BaseInfo(models.Model):
-    review_count = models.IntegerField(default=0)
-    average_rating = models.DecimalField(
-        max_digits=1, decimal_places=1, default=0.0)
-    business_profile_count = models.IntegerField(default=0)
-    offer_count = models.IntegerField(default=0)

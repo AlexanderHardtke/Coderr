@@ -267,13 +267,12 @@ class ReviewViewSet(
 
 class BaseInfoView(APIView):
     permission_classes = [AllowAny]
-    
+
     def get(self, request):
         review_stats = Review.objects.aggregate(
             review_count=Count('id'),
-            average_rating=Avg('rating')
+            average_rating=Avg('rating'),
         )
-        
         business_count = UserProfil.objects.filter(type='business').count()
         offer_count = Offer.objects.count()
         
