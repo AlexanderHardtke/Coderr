@@ -80,17 +80,18 @@ class OfferTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_patch_offer(self):
+    def test_update_offer(self):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})
+        print(self.user_offers[0].pk)
         response = self.client.patch(url, patched_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_invalid_patch_offer(self):
+    def test_invalid_update_offer(self):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})
         response = self.client.patch(url, invalid_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_unauthorized_patch_offer(self):
+    def test_unauthorized_update_offer(self):
         url = reverse('offer-detail', kwargs={'pk': self.user_offers[0].pk})
         self.user = User.objects.create_user(
             username='customer', password='customerpassword'
@@ -108,7 +109,7 @@ class OfferTests(APITestCase):
         response = self.client.patch(url, patched_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_not_found_patch_offer(self):
+    def test_not_found_update_offer(self):
         url = reverse('offer-detail', kwargs={'pk': invalid_offer_pk})
         response = self.client.patch(url, patched_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
