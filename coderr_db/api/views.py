@@ -243,9 +243,9 @@ class ReviewViewSet(
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
-        if "rating" and "business_user" not in request.data:
+        if 'rating' not in request.data:
             return Response(
-                {"error": "Fehlerhafte Anfrage, Rating oder Geschäftskunde fehlt."},
+                {"error": "Fehlerhafte Anfrage, Rating fehlt."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         return super().partial_update(request, *args, **kwargs)
