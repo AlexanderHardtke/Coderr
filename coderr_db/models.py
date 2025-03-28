@@ -100,8 +100,8 @@ class Review(models.Model):
 
 
 class BaseInfo(models.Model):
-    review_count = models.IntegerField(blank=True)
+    review_count = models.IntegerField(default=0)
     average_rating = models.DecimalField(
-        max_digits=1, decimal_places=1, blank=True)
-    business_profile_count = models.IntegerField(blank=True)
-    offer_count = models.IntegerField(blank=True)
+        max_digits=1, decimal_places=1, default=0.0)
+    business_profile_count = models.IntegerField(default=0)
+    offer_count = models.IntegerField(default=0)

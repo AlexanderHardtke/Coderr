@@ -7,12 +7,13 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import SmallResultSetPagination
 from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser, IsOwnerOrAdminOfReview
-from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review, BaseInfo
+from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
     UserProfilCustomerSerializer, OfferSerializer, OrderSerializer,
-    Reviewserializer, BaseInfoSerializer, OfferDetailSerializer, OfferGetSerializer, OrderCountSerializer
+    Reviewserializer, OfferDetailSerializer, OfferGetSerializer, OrderCountSerializer
 )
+from django.db.models import Avg, Count
 
 
 class RegistrationView(APIView):
@@ -264,7 +265,23 @@ class ReviewViewSet(
         return super().destroy(request, *args, **kwargs)
 
 
-class BaseInfoView(generics.RetrieveAPIView):
+class BaseInfoView(APIView):
     permission_classes = [AllowAny]
-    queryset = BaseInfo.objects.all()
-    serializer_class = BaseInfoSerializer
+    
+    def get(self, request):
+        review_stats = Review.objects.aggregate(
+            review_count=Count('id'),
+            average_rating=Avg('rating')
+        )
+        
+        business_count = UserProfil.objects.filter(type='business').count()
+        offer_count = Offer.objects.count()
+        
+        data = {
+            "review_count": review_stats['review_count'],
+            "average_rating": round(float(review_stats['average_rating'] or 0), 1),
+            "business_profile_count": business_count,
+            "offer_count": offer_count
+        }
+        
+        return Response(data)

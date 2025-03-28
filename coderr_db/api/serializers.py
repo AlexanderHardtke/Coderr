@@ -259,10 +259,3 @@ class Reviewserializer(serializers.ModelSerializer):
         print(request.user.userprofil)
         validated_data['reviewer'] = request.user.userprofil
         return super().create(validated_data)
-
-
-class BaseInfoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = BaseInfo
-        fields = '__all__'
