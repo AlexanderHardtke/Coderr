@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import SmallResultSetPagination
-from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser, IsOwnerOrAdminOfReview
+from .permissions import IsOwnerOrAdmin, IsBusinessUser, IsCustomerUser, IsOwnerOrAdminOfReview, IsOwnerOrAdminOfOrder
 from coderr_db.models import UserProfil, Order, Offer, OfferDetail, Review
 from .serializers import (
     UserProfilSerializer, RegistrationSerializer, UserProfilBusinessSerializer,
@@ -173,6 +173,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 {"error": "Ungültiger Status oder unzulässige Felder in der Anfrage."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        instance = self.get_object()
+        if not IsOwnerOrAdminOfOrder().has_permission(request, self, instance):
+            return Response(
+                {'detail': 'Nur der zuständige Anbieter darf die Bestellungen bearbeiten.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         return super().partial_update(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
@@ -229,7 +235,8 @@ class ReviewViewSet(
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        business_user_id = self.request.query_params.get("business_user_id", None)
+        business_user_id = self.request.query_params.get(
+            "business_user_id", None)
         reviewer_id = self.request.query_params.get("reviewer_id", None)
 
         if business_user_id:
@@ -260,7 +267,7 @@ class ReviewViewSet(
         return super().partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object() 
+        instance = self.get_object()
         self.check_object_permissions(request, instance)
         return super().destroy(request, *args, **kwargs)
 
@@ -275,12 +282,12 @@ class BaseInfoView(APIView):
         )
         business_count = UserProfil.objects.filter(type='business').count()
         offer_count = Offer.objects.count()
-        
+
         data = {
             "review_count": review_stats['review_count'],
             "average_rating": round(float(review_stats['average_rating'] or 0), 1),
             "business_profile_count": business_count,
             "offer_count": offer_count
         }
-        
+
         return Response(data)

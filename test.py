@@ -9,3 +9,8 @@
 # test_offers FAILED OK
 # test_orders FAILED (errors=1)
 # test_reviews_base_info FAILED (errors=14)
+
+
+a = [5,4,8,3,1,6,7]
+a.sort()
+print(a[0])

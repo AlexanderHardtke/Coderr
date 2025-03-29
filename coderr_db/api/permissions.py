@@ -23,6 +23,14 @@ class IsCustomerUser(BasePermission):
             return bool(request.user.userprofil.type == 'customer')
 
 
+class IsOwnerOrAdminOfOrder(BasePermission):
+    def has_permission(self, request, view, instance):
+        if request.user.is_superuser:
+            return True
+        if request.user.userprofil.type == 'business':
+            return bool(request.user.userprofil.id == instance.business_user.id)
+
+
 class IsOwnerOrAdminOfReview(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
