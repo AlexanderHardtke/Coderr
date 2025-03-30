@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from coderr_db.models import UserProfil, Offer, Order, Review, OfferDetail
 from django.contrib.auth.models import User
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -225,7 +225,8 @@ class OrderCountSerializer(serializers.Serializer):
 
 
 class Reviewserializer(serializers.ModelSerializer):
-    business_user = serializers.PrimaryKeyRelatedField(queryset=UserProfil.objects.all())
+    business_user = serializers.PrimaryKeyRelatedField(
+        queryset=UserProfil.objects.all())
     reviewer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -247,16 +248,21 @@ class Reviewserializer(serializers.ModelSerializer):
 
     def validate_rating(self, value):
         if value < 1 or value > 5:
-            raise serializers.ValidationError("Bewertung muss zwischen 1 und 5 sein.")
+            raise serializers.ValidationError(
+                "Bewertung muss zwischen 1 und 5 sein.")
         return value
-    
+
     def validate_business_user(self, value):
         if not UserProfil.objects.filter(pk=value.pk).exists():
-            raise serializers.ValidationError("Dieser Business-User existiert nicht.")
+            raise serializers.ValidationError(
+                "Dieser Business-User existiert nicht.")
         return value
-    
+
     def create(self, validated_data):
         request = self.context.get('request')
-        print(request.user.userprofil)
-        validated_data['reviewer'] = request.user.userprofil
+        reviewer = request.user.userprofil
+        business_user = validated_data['business_user']
+        if Review.objects.filter(business_user=business_user, reviewer=reviewer).exists():
+            raise PermissionDenied("Du hast bereits eine Bewertung für diesen Nutzer abgegeben.")
+        validated_data['reviewer'] = reviewer
         return super().create(validated_data)

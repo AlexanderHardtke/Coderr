@@ -227,6 +227,24 @@ def create_business_user(user):
         )
     ]
 
+def create_duplicate_business_user(user):
+    return [
+        UserProfil.objects.create(
+                user= user,
+                username= 'duplicate',
+                first_name= 'duplicate',
+                last_name= 'duplicate',
+                file= 'duplicate.jpg',
+                location= 'duplicate',
+                tel= '123456789',
+                description= 'duplicate description',
+                working_hours= '9-17',
+                type= 'business',
+                email= 'max@duplicate.de',
+                created_at= '2023-01-01T12:00:00'
+        )
+    ]
+
 def create_customer_user(user):
     return [
         UserProfil.objects.create(

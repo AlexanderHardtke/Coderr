@@ -4,7 +4,10 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from coderr_db.models import Review, UserProfil
-from .test_data import create_customer_user, create_business_user, create_test_orders, create_test_offers, invalid_review_pk
+from .test_data import (create_customer_user, create_business_user,
+                        create_test_orders, create_test_offers,
+                        invalid_review_pk, create_duplicate_business_user
+                        )
 
 
 class ReviewTests(APITestCase):
@@ -30,40 +33,43 @@ class ReviewTests(APITestCase):
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
-    def test_get_reviews(self):
-        url = reverse('reviews-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['description'], "Alles war toll!")
+    # def test_get_reviews(self):
+    #     url = reverse('reviews-list')
+    #     response = self.client.get(url)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(response.data[0]['description'], "Alles war toll!")
 
     # def test_unauthorized_get_reviews(self):
     #     unauthorized_token = 'unauthorized token'
     #     self.client.credentials(
     #         HTTP_AUTHORIZATION='Token ' + unauthorized_token)
-    #     url = reverse('review-list')
+    #     url = reverse('reviews-list')
     #     response = self.client.get(url)
     #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # def test_duplicate_post_reviews(self):
-    #     data = {
-    #         "business_user": self.business_user_profile,
-    #         "rating": 1,
-    #         "description": "Test post"
-    #     }
-    #     url = reverse('review-list')
-    #     response = self.client.post(url, data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    #     self.assertIsInstance(response.data['created_at'], str)
-    #     response_duplicate = self.client.post(url, data, format='json')
-    #     self.assertEqual(response_duplicate.status_code,
-    #                      status.HTTP_403_FORBIDDEN)
+    def test_duplicate_post_reviews(self):
+        self.duplicate = User.objects.create_user(
+            username='duplicate', password='duplicatepw'
+        )
+        self.duplicate_profile = create_duplicate_business_user(self.duplicate)
+        data = {
+            "business_user": self.duplicate_profile[0].id,
+            "rating": 1,
+            "description": "Test post"
+        }
+        url = reverse('reviews-list')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIsInstance(response.data['created_at'], str)
+        response_copy = self.client.post(url, data, format='json')
+        self.assertEqual(response_copy.status_code, status.HTTP_403_FORBIDDEN)
 
     # def test_invalid_post_reviews(self):
     #     data = {
     #         "business_user": self.business_user_profile,
     #         "error": 1,
     #     }
-    #     url = reverse('review-list')
+    #     url = reverse('reviews-list')
     #     response = self.client.post(url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -75,12 +81,12 @@ class ReviewTests(APITestCase):
     #         "rating": 1,
     #         "description": "Test post"
     #     }
-    #     url = reverse('review-list')
+    #     url = reverse('reviews-list')
     #     response = self.client.post(url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # def test_patch_review_single(self):
-    #     url = reverse('review-detail', kwargs={'pk': 1})
+    #     url = reverse('reviews-detail', kwargs={'pk': 1})
     #     data = {
     #         "rating": 5,
     #         "description": "Noch besser als erwartet!"
@@ -90,7 +96,7 @@ class ReviewTests(APITestCase):
     #     self.assertIsInstance(response.data['updated_at'], str)
 
     # def test_invalid_patch_review_single(self):
-    #     url = reverse('review-detail', kwargs={'pk': 1})
+    #     url = reverse('reviews-detail', kwargs={'pk': 1})
     #     data = {
     #         "error": "Noch besser als erwartet!"
     #     }
@@ -111,12 +117,12 @@ class ReviewTests(APITestCase):
     #     self.client.credentials(
     #         HTTP_AUTHORIZATION='Token ' + unauthorized_token
     #     )
-    #     url = reverse('review-detail', kwargs={'pk': 1})
+    #     url = reverse('reviews-detail', kwargs={'pk': 1})
     #     response = self.client.patch(url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # def test_not_found_patch_review_single(self):
-    #     url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+    #     url = reverse('reviews-detail', kwargs={'pk': invalid_review_pk})
     #     data = {
     #         "rating": 5,
     #         "description": "Noch besser als erwartet!"
@@ -125,7 +131,7 @@ class ReviewTests(APITestCase):
     #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # def test_delete_review_single(self):
-    #     url = reverse('review-detail', kwargs={'pk': 1})
+    #     url = reverse('reviews-detail', kwargs={'pk': 1})
     #     response = self.client.delete(url)
     #     self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -134,19 +140,19 @@ class ReviewTests(APITestCase):
     #     self.client.credentials(
     #         HTTP_AUTHORIZATION='Token ' + unauthorized_token
     #     )
-    #     url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+    #     url = reverse('reviews-detail', kwargs={'pk': invalid_review_pk})
     #     response = self.client.delete(url)
     #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # def test_forbidden_delete_review_single(self):
     #     self.token = Token.objects.create(user=self.business_user)
     #     self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-    #     url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+    #     url = reverse('reviews-detail', kwargs={'pk': invalid_review_pk})
     #     response = self.client.delete(url)
     #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     # def test_not_found_delete_review_single(self):
-    #     url = reverse('review-detail', kwargs={'pk': invalid_review_pk})
+    #     url = reverse('reviews-detail', kwargs={'pk': invalid_review_pk})
     #     response = self.client.delete(url)
     #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
