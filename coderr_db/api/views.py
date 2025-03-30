@@ -14,6 +14,8 @@ from .serializers import (
     Reviewserializer, OfferDetailSerializer, OfferGetSerializer, OrderCountSerializer
 )
 from django.db.models import Avg, Count
+from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 
 class RegistrationView(APIView):
@@ -189,15 +191,21 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
-
+    
 class OrderCountBaseView(generics.RetrieveAPIView):
     serializer_class = OrderCountSerializer
     queryset = Order.objects.all()
 
     def get_object(self):
+        user_pk = self.kwargs["pk"]
+        user = get_object_or_404(UserProfil, pk=user_pk)
+        
+        if user.type != 'business':
+            raise Http404("Kein Geschäftsnutzer mit der angegebenen ID gefunden.")
+        
         return {
             "order_count": self.get_queryset().filter(
-                business_user=self.kwargs["pk"]
+                business_user=user_pk
             ).count()
         }
 
