@@ -61,29 +61,34 @@ class ReviewTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIsInstance(response.data['created_at'], str)
+
         response_copy = self.client.post(url, data, format='json')
         self.assertEqual(response_copy.status_code, status.HTTP_403_FORBIDDEN)
 
     # def test_invalid_post_reviews(self):
     #     data = {
-    #         "business_user": self.business_user_profile,
+    #         "business_user": self.user_profile[0].id,
     #         "error": 1,
     #     }
     #     url = reverse('reviews-list')
     #     response = self.client.post(url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # def test_unauthorized_post_reviews(self):
-    #     self.token = Token.objects.create(user=self.business_user)
-    #     self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-    #     data = {
-    #         "business_user": self.business_user_profile,
-    #         "rating": 1,
-    #         "description": "Test post"
-    #     }
-    #     url = reverse('reviews-list')
-    #     response = self.client.post(url, data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_unauthorized_post_reviews(self):
+        self.duplicate = User.objects.create_user(
+            username='duplicate', password='duplicatepw'
+        )
+        self.duplicate_profile = create_duplicate_business_user(self.duplicate)
+        self.token = Token.objects.create(user=self.business_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        data = {
+            "business_user": self.duplicate_profile[0].id,
+            "rating": 1,
+            "description": "Test post"
+        }
+        url = reverse('reviews-list')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     # def test_patch_review_single(self):
     #     url = reverse('reviews-detail', kwargs={'pk': 1})

@@ -236,8 +236,6 @@ class ReviewViewSet(
     def get_permissions(self):
         if self.request.method == 'GET':
             return [IsAuthenticated()]
-        if self.request.method == 'POST':
-            return [IsCustomerUser()]
         else:
             return [IsOwnerOrAdminOfReview()]
 
