@@ -85,53 +85,55 @@ class OrderTests(APITestCase):
     #     response = self.client.patch(url, invalid_data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_unauthorized_patch_order(self):
-        data = {"status": "completed"}
-        url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-        unauthorized_token = 'unauthorized token'
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + unauthorized_token
-        )
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_not_found_patch_order(self):
-        data = {"status": "completed"}
-        url = reverse('orders-detail', kwargs={'pk': invalid_order_pk})
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_delete_order(self):
-        url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-    # def test_unauthorized_delete_order(self):
-    #     url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})
-    #     self.user = User.objects.create_user(
-    #         username='otherUser', password='otherUser'
-    #     )
-    #     self.user_profile = create_customer_user(self.user)
-    #     self.client = APIClient
-    #     self.token = Token.objects.create(user=self.user)
-    #     self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-    #     response = self.client.delete(url)
+    # def test_unauthorized_patch_order(self):
+    #     data = {"status": "completed"}
+    #     url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})
+    #     response = self.client.patch(url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     #     unauthorized_token = 'unauthorized token'
     #     self.client.credentials(
     #         HTTP_AUTHORIZATION='Token ' + unauthorized_token
     #     )
-    #     response = self.client.delete(url)
+    #     response = self.client.patch(url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # def test_not_found_delete_order(self):
+    # def test_not_found_patch_order(self):
+    #     data = {"status": "completed"}
     #     url = reverse('orders-detail', kwargs={'pk': invalid_order_pk})
-    #     response = self.client.delete(url)
+    #     response = self.client.patch(url, data, format='json')
     #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_order(self):
+        self.admin = User.objects.create_superuser(username='staff', password='staffpw', is_staff=True)
+        self.client.force_authenticate(user=self.admin)
+        url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_unauthorized_delete_order(self):
+        url = reverse('orders-detail', kwargs={'pk': self.user_orders.pk})
+        self.user = User.objects.create_user(
+            username='otherUser', password='otherUser'
+        )
+        self.user_profile = create_customer_user(self.user)
+        self.client = APIClient
+        self.token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token
+        )
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_not_found_delete_order(self):
+        url = reverse('orders-detail', kwargs={'pk': invalid_order_pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # def test_order_count_detail(self):
     #     url = reverse('order-count-detail', kwargs={'pk': self.user.pk})
