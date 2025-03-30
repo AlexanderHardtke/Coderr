@@ -6,7 +6,13 @@ class IsOwnerOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return bool(request.user and request.user.is_authenticated)
-        return request.user and (request.user.is_superuser or request.user == obj.user or request.user == obj.user.user)
+        user_exists = hasattr(obj, "user") and obj.user is not None
+        nested_user_exists = user_exists and hasattr(obj.user, "user") and obj.user.user is not None
+        if nested_user_exists:
+            return request.user and (request.user.is_superuser or request.user == obj.user.user)
+        if user_exists:
+            return request.user and (request.user.is_superuser or request.user == obj.user)
+        return False
 
 
 class IsBusinessUser(BasePermission):
