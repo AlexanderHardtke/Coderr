@@ -83,7 +83,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['details__updated_at', 'details__price']
     allowed_query_params = {
-        'creator_id', 'min_price',
+        'creator_id', 'min_price', 'page',
         'max_delivery_time', 'search', 'ordering'
     }
 
@@ -119,19 +119,31 @@ class OfferViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
 
         creator_param = self.request.query_params.get('creator_id', None)
-        if creator_param is not None:
-            queryset = queryset.filter(user__id=creator_param)
+        if creator_param:
+            try:
+                creator_param = int(creator_param)
+                queryset = queryset.filter(user__id=creator_param)
+            except ValueError:
+                pass
 
         price_param = self.request.query_params.get('min_price', None)
-        if price_param is not None:
-            price_param = float(price_param)
-            queryset = queryset.filter(details__price__lte=price_param)
+        if price_param:
+            try:
+                price_param = float(price_param)
+                queryset = queryset.filter(details__price__lte=price_param)
+            except ValueError:
+                pass
 
         delivery_param = self.request.query_params.get(
             'max_delivery_time', None)
-        if delivery_param is not None:
-            queryset = queryset.filter(
-                details__delivery_time_in_days__lte=delivery_param)
+        if delivery_param:
+            try:
+                delivery_param = int(delivery_param)
+                queryset = queryset.filter(
+                    details__delivery_time_in_days__lte=delivery_param
+                )
+            except ValueError:
+                pass
 
         return queryset
 
@@ -191,7 +203,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
-    
+
 class OrderCountBaseView(generics.RetrieveAPIView):
     serializer_class = OrderCountSerializer
     queryset = Order.objects.all()
@@ -199,10 +211,11 @@ class OrderCountBaseView(generics.RetrieveAPIView):
     def get_object(self):
         user_pk = self.kwargs["pk"]
         user = get_object_or_404(UserProfil, pk=user_pk)
-        
+
         if user.type != 'business':
-            raise Http404("Kein Geschäftsnutzer mit der angegebenen ID gefunden.")
-        
+            raise Http404(
+                "Kein Geschäftsnutzer mit der angegebenen ID gefunden.")
+
         return {
             "order_count": self.get_queryset().filter(
                 business_user=user_pk
