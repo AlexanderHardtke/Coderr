@@ -224,6 +224,7 @@ class OrderCountBaseView(generics.RetrieveAPIView):
 
 
 class OrderCountView(OrderCountBaseView):
+    serializer_class = OrderCountSerializer
     def get_queryset(self):
         return super().get_queryset().filter(status='in_progress')
 
@@ -231,6 +232,15 @@ class OrderCountView(OrderCountBaseView):
 class CompletedOrderCountView(OrderCountBaseView):
     def get_queryset(self):
         return super().get_queryset().filter(status='completed')
+    
+    def get_object(self):
+        user_pk = self.kwargs['pk']
+
+        return {
+            'completed_order_count': self.get_queryset().filter(
+                business_user=user_pk
+            ).count()
+        }
 
 
 class ReviewViewSet(
