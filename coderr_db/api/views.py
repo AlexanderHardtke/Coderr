@@ -61,11 +61,13 @@ class LoginView(ObtainAuthToken):
 
 
 class UserListBusinessView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = UserProfil.objects.filter(type='business')
     serializer_class = UserProfilBusinessSerializer
 
 
 class UserListCustomerView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = UserProfil.objects.filter(type='customer')
     serializer_class = UserProfilCustomerSerializer
 
