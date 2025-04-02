@@ -16,35 +16,37 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
-    def save(self):
-        pw = self.validated_data['password']
-        repeated_pw = self.validated_data['repeated_password']
-        user_type = self.validated_data.pop('type')
-
-        if pw != repeated_pw:
+    def validate(self, data):
+        if data['password'] != data['repeated_password']:
             raise serializers.ValidationError(
-                {'error': 'Passwörter stimmen nicht überein.'})
+                {"repeated_password": "Passwörter stimmen nicht überein."}
+            )
 
-        if User.objects.filter(email=self.validated_data['email']).exists():
+        if User.objects.filter(email=data['email']).exists():
             raise serializers.ValidationError(
-                {'error': 'Email wird bereits verwendet.'})
+                {"email": "Diese Email wird bereits verwendet."}
+            )
 
-        account = User(
-            email=self.validated_data['email'],
-            username=self.validated_data['username'],
+        if User.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError(
+                {"username": "Dieser Benutzername ist bereits vergeben."}
+            )
+
+        return data
+
+    def create(self, validated_data):
+        user_type = validated_data.pop('type')
+        validated_data.pop('repeated_password')
+
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
         )
 
-        account.set_password(pw)
-        account.save()
+        UserProfil.objects.create(user=user, type=user_type,)
 
-        UserProfil.objects.create(
-            user=account,
-            email=account.email,
-            username=account.username,
-            type=user_type,
-        )
-
-        return account
+        return user
 
 
 class UserProfilSerializer(serializers.ModelSerializer):
@@ -264,6 +266,7 @@ class Reviewserializer(serializers.ModelSerializer):
         reviewer = request.user.userprofil
         business_user = validated_data['business_user']
         if Review.objects.filter(business_user=business_user, reviewer=reviewer).exists():
-            raise serializers.ValidationError('Du hast bereits eine Bewertung für diesen Anbieter abgegeben.')
+            raise serializers.ValidationError(
+                'Du hast bereits eine Bewertung für diesen Anbieter abgegeben.')
         validated_data['reviewer'] = reviewer
         return super().create(validated_data)

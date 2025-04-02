@@ -12,10 +12,8 @@ class UserProfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     type = models.CharField(
         max_length=10, choices=CATEGORY_CHOICES, null=False, blank=False)
-    email = models.EmailField(max_length=50, unique=True)
     first_name = models.CharField(max_length=25, blank=True)
     last_name = models.CharField(max_length=25, blank=True)
-    username = models.CharField(max_length=50, unique=True)
     file = models.FileField(max_length=99, blank=True, upload_to='images/')
     location = models.CharField(max_length=25, blank=True)
     tel_regex = RegexValidator(
