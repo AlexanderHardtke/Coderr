@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='offerdetail',
             name='offer',
-            field=models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, related_name='details', to='coderr_db.offer'),
+            field=models.ForeignKey(default="", on_delete=django.db.models.deletion.CASCADE, related_name='details', to='coderr_db.offer'),
         ),
     ]

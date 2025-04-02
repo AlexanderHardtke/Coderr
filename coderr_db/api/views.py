@@ -34,7 +34,7 @@ class RegistrationView(APIView):
                 'user_id': saved_user.pk,
             }
         else:
-            Response({"your message": serializer.errors},
+            Response({'your message': serializer.errors},
                      status=status.HTTP_400_BAD_REQUEST)
 
         return Response(data, status=status.HTTP_201_CREATED)
@@ -56,7 +56,7 @@ class LoginView(ObtainAuthToken):
                 'user_id': user.pk,
             }
         else:
-            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data, status=status.HTTP_201_CREATED)
 
 
@@ -99,7 +99,7 @@ class OfferViewSet(viewsets.ModelViewSet):
         invalid_params = query_params - self.allowed_query_params
         if invalid_params:
             return Response(
-                {"error": "Ungültige Anfrageparameter."},
+                {'error': 'Ungültige Anfrageparameter.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -182,9 +182,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
-        if "status" not in request.data or len(request.data) > 1:
+        if 'status' not in request.data or len(request.data) > 1:
             return Response(
-                {"error": "Ungültiger Status oder unzulässige Felder in der Anfrage."},
+                {'error': 'Ungültiger Status oder unzulässige Felder in der Anfrage.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         instance = self.get_object()
@@ -196,11 +196,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        return Response({"error": "Detailansicht nicht erlaubt."}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'error': 'Detailansicht nicht erlaubt.'}, status=status.HTTP_403_FORBIDDEN)
 
     def destroy(self, request, *args, **kwargs):
         if not request.user.is_staff:
-            return Response({"error": "Benutzer hat keine Berechtigung, die Bestellung zu löschen."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'error': 'Sie haben keine Berechtigung, die Bestellung zu löschen.'}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
 
@@ -209,15 +209,15 @@ class OrderCountBaseView(generics.RetrieveAPIView):
     queryset = Order.objects.all()
 
     def get_object(self):
-        user_pk = self.kwargs["pk"]
+        user_pk = self.kwargs['pk']
         user = get_object_or_404(UserProfil, pk=user_pk)
 
         if user.type != 'business':
             raise Http404(
-                "Kein Geschäftsnutzer mit der angegebenen ID gefunden.")
+                'Kein Anbieter mit der angegebenen ID gefunden.')
 
         return {
-            "order_count": self.get_queryset().filter(
+            'order_count': self.get_queryset().filter(
                 business_user=user_pk
             ).count()
         }
@@ -255,8 +255,8 @@ class ReviewViewSet(
     def get_queryset(self):
         queryset = super().get_queryset()
         business_user_id = self.request.query_params.get(
-            "business_user_id", None)
-        reviewer_id = self.request.query_params.get("reviewer_id", None)
+            'business_user_id', None)
+        reviewer_id = self.request.query_params.get('reviewer_id', None)
 
         if business_user_id:
             queryset = queryset.filter(business_user=business_user_id)
@@ -280,7 +280,7 @@ class ReviewViewSet(
     def partial_update(self, request, *args, **kwargs):
         if 'rating' not in request.data:
             return Response(
-                {"error": "Fehlerhafte Anfrage, Rating fehlt."},
+                {'error': 'Fehlerhafte Anfrage, Rating fehlt.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         return super().partial_update(request, *args, **kwargs)
@@ -303,10 +303,10 @@ class BaseInfoView(APIView):
         offer_count = Offer.objects.count()
 
         data = {
-            "review_count": review_stats['review_count'],
-            "average_rating": round(float(review_stats['average_rating'] or 0), 1),
-            "business_profile_count": business_count,
-            "offer_count": offer_count
+            'review_count': review_stats['review_count'],
+            'average_rating': round(float(review_stats['average_rating'] or 0), 1),
+            'business_profile_count': business_count,
+            'offer_count': offer_count
         }
 
         return Response(data)

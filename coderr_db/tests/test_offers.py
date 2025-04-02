@@ -38,7 +38,7 @@ class OfferTests(APITestCase):
 
     def test_improper_post_offer(self):
         data = {
-            "title": "Zweites Grafikdesign-Paket"
+            'title': 'Zweites Grafikdesign-Paket'
         }
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

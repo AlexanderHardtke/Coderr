@@ -40,17 +40,17 @@ class OrderTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_order(self):
-        data = {"offer_detail_id": 1}
+        data = {'offer_detail_id': 1}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_invalid_post_order(self):
-        data = {"offer_error_id": 1}
+        data = {'offer_error_id': 1}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_unauthorized_post_order(self):
-        data = {"offer_detail_id": 1}
+        data = {'offer_detail_id': 1}
         self.token = Token.objects.create(user=self.business_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         response = self.client.post(self.url, data, format='json')
@@ -64,7 +64,7 @@ class OrderTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_invalid_post_order(self):
-        data = {"offer_detail_id": invalid_order_pk}
+        data = {'offer_detail_id': invalid_order_pk}
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -72,21 +72,21 @@ class OrderTests(APITestCase):
         self.token = Token.objects.create(user=self.business_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})
-        data = {"status": "completed"}
+        data = {'status': 'completed'}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["status"], "completed")
+        self.assertEqual(response.data['status'], 'completed')
 
     def test_invalid_patch_order(self):
         self.token = Token.objects.create(user=self.business_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})
-        invalid_data = {"status": "error"}
+        invalid_data = {'status': 'error'}
         response = self.client.patch(url, invalid_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_unauthorized_patch_order(self):
-        data = {"status": "completed"}
+        data = {'status': 'completed'}
         url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -99,7 +99,7 @@ class OrderTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_not_found_patch_order(self):
-        data = {"status": "completed"}
+        data = {'status': 'completed'}
         url = reverse('orders-detail', kwargs={'pk': invalid_order_pk})
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -151,7 +151,7 @@ class OrderTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_order_count_completed_detail(self):
-        data = {"status": "completed"}
+        data = {'status': 'completed'}
         self.token = Token.objects.create(user=self.business_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         url = reverse('orders-detail', kwargs={'pk': self.user_orders[0].pk})

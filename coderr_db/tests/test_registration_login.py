@@ -13,18 +13,18 @@ class CreateUserTests(APITestCase):
 
     def test_create_user(self):
         data = {
-            "username": "exampleUsername",
-            "email": "example@mail.de",
-            "password": "examplePassword",
-            "repeated_password": "examplePassword",
-            "type": "customer"
+            'username': 'exampleUsername',
+            'email': 'example@mail.de',
+            'password': 'examplePassword',
+            'repeated_password': 'examplePassword',
+            'type': 'customer'
         }
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         partial_response = {
-            "username": "exampleUsername",
-            "email": "example@mail.de",
+            'username': 'exampleUsername',
+            'email': 'example@mail.de',
         }
         for key, value in partial_response.items():
             self.assertEqual(response.data[key], value)
@@ -38,11 +38,11 @@ class CreateUserTests(APITestCase):
 
     def test_fail_create_user(self):
         data = {
-            "username": "exampleUsername",
-            "email": "example@mail.de",
-            "password": "rightPassword",
-            "repeated_password": "wrongPassword",
-            "type": "customer"
+            'username': 'exampleUsername',
+            'email': 'example@mail.de',
+            'password': 'rightPassword',
+            'repeated_password': 'wrongPassword',
+            'type': 'customer'
         }
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -52,7 +52,7 @@ class CreateUserTests(APITestCase):
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
-        data = {"username": "exampleUsername"}
+        data = {'username': 'exampleUsername'}
         response = self.client.patch(self.url, data, format='json')
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
@@ -73,20 +73,20 @@ class UserLoginTests(APITestCase):
 
     def test_login_user(self):
         data = {
-            "username": "testuser",
-            "password": "testpassword"
+            'username': 'testuser',
+            'password': 'testpassword'
         }
         response = self.client.post(self.url, data, format='json')
 
-        self.assertEqual(response.data["username"], data["username"])
+        self.assertEqual(response.data['username'], data['username'])
         self.assertIsInstance(response.data['token'], str)
         self.assertIsInstance(response.data['user_id'], int)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_fail_login_user(self):
         data = {
-            "username": "wrongUsername",
-            "password": "wrongPassword"
+            'username': 'wrongUsername',
+            'password': 'wrongPassword'
         }
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

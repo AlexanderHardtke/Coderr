@@ -8,72 +8,72 @@ invalid_review_pk = 254
 offer_detail = 4
 
 new_offer_data = {
-    "title": "Zweites Grafikdesign-Paket",
-    "image": None,
-    "description": "Ein umfassendes Grafikdesign-Paket für Unternehmen.",
-    "details": [
+    'title': 'Zweites Grafikdesign-Paket',
+    'image': None,
+    'description': 'Ein umfassendes Grafikdesign-Paket für Unternehmen.',
+    'details': [
         {
-            "title": "Zweites Basic Design",
-            "revisions": 2,
-            "delivery_time_in_days": 5,
-            "price": 100,
-            "features": ["Logo Design", "Visitenkarte"],
-            "offer_type": "basic"
+            'title': 'Zweites Basic Design',
+            'revisions': 2,
+            'delivery_time_in_days': 5,
+            'price': 100,
+            'features': ['Logo Design', 'Visitenkarte'],
+            'offer_type': 'basic'
         },
         {
-            "title": "Zweites Standard Design",
-            "revisions": 5,
-            "delivery_time_in_days": 7,
-            "price": 200,
-            "features": ["Logo Design", "Visitenkarte", "Briefpapier"],
-            "offer_type": "standard"
+            'title': 'Zweites Standard Design',
+            'revisions': 5,
+            'delivery_time_in_days': 7,
+            'price': 200,
+            'features': ['Logo Design', 'Visitenkarte', 'Briefpapier'],
+            'offer_type': 'standard'
         },
         {
-            "title": "Zweites Premium Design",
-            "revisions": 10,
-            "delivery_time_in_days": 10,
-            "price": 500,
-            "features": ["Logo Design", "Visitenkarte", "Briefpapier", "Flyer"],
-            "offer_type": "premium"
+            'title': 'Zweites Premium Design',
+            'revisions': 10,
+            'delivery_time_in_days': 10,
+            'price': 500,
+            'features': ['Logo Design', 'Visitenkarte', 'Briefpapier', 'Flyer'],
+            'offer_type': 'premium'
         }
     ]
 }
 
 patched_offer_data = {
-  "title": "Updated Grafikdesign-Paket",
-  "details": [
+  'title': 'Updated Grafikdesign-Paket',
+  'details': [
     {
-      "title": "Basic Design Updated",
-      "revisions": 3,
-      "delivery_time_in_days": 6,
-      "price": 120,
-      "features": [
-        "Logo Design",
-        "Flyer"
+      'title': 'Basic Design Updated',
+      'revisions': 3,
+      'delivery_time_in_days': 6,
+      'price': 120,
+      'features': [
+        'Logo Design',
+        'Flyer'
       ],
-      "offer_type": "basic"
+      'offer_type': 'basic'
     }
   ]
 }
 
 invalid_offer_data = {
-  "title": "Updated Grafikdesign-Paket",
-  "details": [
+  'title': 'Updated Grafikdesign-Paket',
+  'details': [
     {
-      "title": "Basic Design Updated",
-      "offer_type": "error"
+      'title': 'Basic Design Updated',
+      'offer_type': 'error'
     }
   ]
 }
 
 new_review_data = {
-    "id": 3,
-    "business_user": 2,
-    "reviewer": 3,
-    "rating": 5,
-    "description": "Hervorragende Erfahrung!",
-    "created_at": "2023-10-30T15:30:00Z",
-    "updated_at": "2023-10-30T15:30:00Z"
+    'id': 3,
+    'business_user': 2,
+    'reviewer': 3,
+    'rating': 5,
+    'description': 'Hervorragende Erfahrung!',
+    'created_at': '2023-10-30T15:30:00Z',
+    'updated_at': '2023-10-30T15:30:00Z'
 }
 
 
@@ -102,94 +102,94 @@ def create_test_offers(user):
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer1,
-        title="Basic API",
+        title='Basic API',
         revisions=2,
         delivery_time_in_days=6,
         price=150,
-        features=["Login", "Registrierung"],
-        offer_type="basic"
+        features=['Login', 'Registrierung'],
+        offer_type='basic'
     )
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer1,
-        title="Standard API",
+        title='Standard API',
         revisions=5,
         delivery_time_in_days=8,
         price=300,
-        features=["Login", "Registrierung", "Bearbeitung einfacher Datenstrukturen"],
-        offer_type="standard"
+        features=['Login', 'Registrierung', 'Bearbeitung einfacher Datenstrukturen'],
+        offer_type='standard'
     )
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer1,
-        title="Premium API",
+        title='Premium API',
         revisions=10,
         delivery_time_in_days=15,
         price=750,
-        features=["Login", "Registrierung", "Bearbeitung einfacher und komplexer Datenstrukturen"],
-        offer_type="premium"
+        features=['Login', 'Registrierung', 'Bearbeitung einfacher und komplexer Datenstrukturen'],
+        offer_type='premium'
     )
     
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer2,
-        title="Basic Design",
+        title='Basic Design',
         revisions=2,
         delivery_time_in_days=5,
         price=100,
-        features=["Logo Design", "Visitenkarte"],
-        offer_type="basic"
+        features=['Logo Design', 'Visitenkarte'],
+        offer_type='basic'
     )
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer2,
-        title="Standard Design",
+        title='Standard Design',
         revisions=5,
         delivery_time_in_days=7,
         price=200,
-        features=["Logo Design", "Visitenkarte", "Briefpapier"],
-        offer_type="standard"
+        features=['Logo Design', 'Visitenkarte', 'Briefpapier'],
+        offer_type='standard'
     )
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer2,
-        title="Premium Design",
+        title='Premium Design',
         revisions=10,
         delivery_time_in_days=10,
         price=500,
-        features=["Logo Design", "Visitenkarte", "Briefpapier", "Flyer"],
-        offer_type="premium"
+        features=['Logo Design', 'Visitenkarte', 'Briefpapier', 'Flyer'],
+        offer_type='premium'
     )
     
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer3,
-        title="Android",
+        title='Android',
         revisions=2,
         delivery_time_in_days=3,
         price=100,
-        features=["Funktional in Android-Store"],
-        offer_type="basic"
+        features=['Funktional in Android-Store'],
+        offer_type='basic'
     )
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer3,
-        title="Apple-IOS",
+        title='Apple-IOS',
         revisions=3,
         delivery_time_in_days=5,
         price=150,
-        features=["Funktional in Apple-Store", "Geprüft durch Apple"],
-        offer_type="standard"
+        features=['Funktional in Apple-Store', 'Geprüft durch Apple'],
+        offer_type='standard'
     )
     OfferDetail.objects.create(
         business_user_id=user.id,
         offer=offer3,
-        title="Android + Apple-IOS",
+        title='Android + Apple-IOS',
         revisions=6,
         delivery_time_in_days=7,
         price=225,
-        features=["Funktional in Android-Store", "Funktional in Apple-Store", "Geprüft durch Apple"],
-        offer_type="premium"
+        features=['Funktional in Android-Store', 'Funktional in Apple-Store', 'Geprüft durch Apple'],
+        offer_type='premium'
     )
     
     return [offer1, offer2, offer3]
@@ -203,7 +203,7 @@ def create_test_orders(user):
             customer_user=user,
             business_user=offer_detail.business_user,
             offer_detail=offer_detail,
-            status="in_progress",
+            status='in_progress',
             price=offer_detail.price,
             delivery_time_in_days=offer_detail.delivery_time_in_days
         )

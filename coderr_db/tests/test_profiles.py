@@ -40,11 +40,11 @@ class ProfileTests(APITestCase):
     def test_patch_profile(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         data = {
-            "first_name": "firstTest",
-            "last_name": "lastTest"
+            'first_name': 'firstTest',
+            'last_name': 'lastTest'
         }
         response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.data['first_name'], "firstTest")
+        self.assertEqual(response.data['first_name'], 'firstTest')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         for key, value in data.items():
@@ -63,13 +63,13 @@ class ProfileTests(APITestCase):
             HTTP_AUTHORIZATION='Token ' + unauthorized_token
         )
         self.user = User.objects
-        data = {"first_name": "error"}
+        data = {'first_name': 'error'}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_patch_profile_not_found(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk+1})
-        data = {"first_name": "error"}
+        data = {'first_name': 'error'}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -81,7 +81,7 @@ class ProfileTests(APITestCase):
         )
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-        data = {"first_name": "error"}
+        data = {'first_name': 'error'}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 

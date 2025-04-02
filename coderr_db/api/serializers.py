@@ -85,7 +85,7 @@ class OfferSerializer(serializers.ModelSerializer):
         model = Offer
         fields = '__all__'
         extra_kwargs = {
-            "user": {"required": False}
+            'user': {'required': False}
         }
 
     def validate(self, data):
@@ -153,45 +153,45 @@ class OfferGetSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         return [
             {
-                "id": detail.pk,
-                "url": request.build_absolute_uri(f"/api/offerdetails/{detail.id}/")
+                'id': detail.pk,
+                'url': request.build_absolute_uri(f'/api/offerdetails/{detail.id}/')
             }
             for detail in obj.details.all()
         ]
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(source="offer_detail.title", read_only=True)
+    title = serializers.CharField(source='offer_detail.title', read_only=True)
     revisions = serializers.IntegerField(
-        source="offer_detail.revisions", read_only=True)
+        source='offer_detail.revisions', read_only=True)
     features = serializers.JSONField(
-        source="offer_detail.features", read_only=True)
+        source='offer_detail.features', read_only=True)
     offer_type = serializers.CharField(
-        source="offer_detail.offer_type", read_only=True)
+        source='offer_detail.offer_type', read_only=True)
     offer_detail_id = serializers.IntegerField(write_only=True, required=True)
 
     class Meta:
         model = Order
         fields = [
-            "id",
-            "customer_user",
-            "business_user",
-            "title",
-            "revisions",
-            "delivery_time_in_days",
-            "price",
-            "features",
-            "offer_type",
-            "status",
-            "created_at",
-            "updated_at",
-            "offer_detail_id",
+            'id',
+            'customer_user',
+            'business_user',
+            'title',
+            'revisions',
+            'delivery_time_in_days',
+            'price',
+            'features',
+            'offer_type',
+            'status',
+            'created_at',
+            'updated_at',
+            'offer_detail_id',
         ]
         read_only_fields = [
-            "customer_user",
-            "delivery_time_in_days",
-            "price",
-            "created_at",
+            'customer_user',
+            'delivery_time_in_days',
+            'price',
+            'created_at',
         ]
 
     def validate_offer_detail_id(self, data):
@@ -204,7 +204,7 @@ class OrderSerializer(serializers.ModelSerializer):
             offer_detail = OfferDetail.objects.get(id=data)
         except OfferDetail.DoesNotExist:
             raise NotFound(
-                "Das angegebene Angebotsdetail wurde nicht gefunden."
+                'Das angegebene Angebotsdetail wurde nicht gefunden.'
             )
         self.context['offer_detail'] = offer_detail
         return data
@@ -232,30 +232,30 @@ class Reviewserializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = [
-            "id",
-            "business_user",
-            "reviewer",
-            "rating",
-            "description",
-            "created_at",
-            "updated_at",
+            'id',
+            'business_user',
+            'reviewer',
+            'rating',
+            'description',
+            'created_at',
+            'updated_at',
         ]
         read_only_fields = [
-            "reviewer",
-            "created_at",
-            "updated_at",
+            'reviewer',
+            'created_at',
+            'updated_at',
         ]
 
     def validate_rating(self, value):
         if value < 1 or value > 5:
             raise serializers.ValidationError(
-                "Bewertung muss zwischen 1 und 5 sein.")
+                'Bewertung muss zwischen 1 und 5 sein.')
         return value
 
     def validate_business_user(self, value):
         if not UserProfil.objects.filter(pk=value.pk).exists():
             raise serializers.ValidationError(
-                "Dieser Business-User existiert nicht.")
+                'Dieser Anbieter existiert nicht.')
         return value
 
     def create(self, validated_data):
@@ -263,6 +263,6 @@ class Reviewserializer(serializers.ModelSerializer):
         reviewer = request.user.userprofil
         business_user = validated_data['business_user']
         if Review.objects.filter(business_user=business_user, reviewer=reviewer).exists():
-            raise PermissionDenied("Du hast bereits eine Bewertung für diesen Nutzer abgegeben.")
+            raise PermissionDenied('Du hast bereits eine Bewertung für diesen Anbieter abgegeben.')
         validated_data['reviewer'] = reviewer
         return super().create(validated_data)

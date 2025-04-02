@@ -27,7 +27,7 @@ class ReviewTests(APITestCase):
             business_user=self.business_profile[0],
             reviewer=self.user_profile[0],
             rating=4,
-            description="Alles war toll!"
+            description='Alles war toll!'
         )
         self.client = APIClient()
         self.token = Token.objects.create(user=self.user)
@@ -37,7 +37,7 @@ class ReviewTests(APITestCase):
         url = reverse('reviews-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['description'], "Alles war toll!")
+        self.assertEqual(response.data[0]['description'], 'Alles war toll!')
 
     def test_unauthorized_get_reviews(self):
         unauthorized_token = 'unauthorized token'
@@ -53,9 +53,9 @@ class ReviewTests(APITestCase):
         )
         self.duplicate_profile = create_duplicate_business_user(self.duplicate)
         data = {
-            "business_user": self.duplicate_profile[0].id,
-            "rating": 1,
-            "description": "Test post"
+            'business_user': self.duplicate_profile[0].id,
+            'rating': 1,
+            'description': 'Test post'
         }
         url = reverse('reviews-list')
         response = self.client.post(url, data, format='json')
@@ -67,8 +67,8 @@ class ReviewTests(APITestCase):
 
     def test_invalid_post_reviews(self):
         data = {
-            "business_user": self.user_profile[0].id,
-            "error": 1,
+            'business_user': self.user_profile[0].id,
+            'error': 1,
         }
         url = reverse('reviews-list')
         response = self.client.post(url, data, format='json')
@@ -82,9 +82,9 @@ class ReviewTests(APITestCase):
         self.token = Token.objects.create(user=self.business_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
         data = {
-            "business_user": self.duplicate_profile[0].id,
-            "rating": 1,
-            "description": "Test post"
+            'business_user': self.duplicate_profile[0].id,
+            'rating': 1,
+            'description': 'Test post'
         }
         url = reverse('reviews-list')
         response = self.client.post(url, data, format='json')
@@ -93,8 +93,8 @@ class ReviewTests(APITestCase):
     def test_patch_review_single(self):
         url = reverse('reviews-detail', kwargs={'pk': 1})
         data = {
-            "rating": 5,
-            "description": "Doch besser als erwartet!"
+            'rating': 5,
+            'description': 'Doch besser als erwartet!'
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -103,15 +103,15 @@ class ReviewTests(APITestCase):
     def test_invalid_patch_review_single(self):
         url = reverse('reviews-detail', kwargs={'pk': 1})
         data = {
-            "error": "Doch besser als erwartet!"
+            'error': 'Doch besser als erwartet!'
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_unauthorized_patch_review_single(self):
         data = {
-            "rating": 5,
-            "description": "Doch besser als erwartet!"
+            'rating': 5,
+            'description': 'Doch besser als erwartet!'
         }
         self.token = Token.objects.create(user=self.business_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
@@ -129,8 +129,8 @@ class ReviewTests(APITestCase):
     def test_not_found_patch_review_single(self):
         url = reverse('reviews-detail', kwargs={'pk': invalid_review_pk})
         data = {
-            "rating": 5,
-            "description": "Doch besser als erwartet!"
+            'rating': 5,
+            'description': 'Doch besser als erwartet!'
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

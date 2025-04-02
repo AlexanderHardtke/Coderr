@@ -14,7 +14,7 @@ router.register(r'orders', OrderViewSet, basename='orders')
 router.register(r'reviews', ReviewViewSet, basename='reviews')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path("", include(router.urls)),
     path('registration/', RegistrationView.as_view(), name='registration-detail'),
     path('login/', LoginView.as_view(), name='login'),
     path('profile/<int:pk>/', UserSingleView.as_view(), name='profile-detail'),
