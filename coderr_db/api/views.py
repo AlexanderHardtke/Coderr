@@ -83,7 +83,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['details__updated_at', 'details__price']
     allowed_query_params = {
-        'creator_id', 'min_price', 'page',
+        'creator_id', 'min_price', 'page_size',
         'max_delivery_time', 'search', 'ordering'
     }
 
