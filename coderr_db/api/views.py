@@ -129,24 +129,24 @@ class OfferViewSet(viewsets.ModelViewSet):
             except ValueError:
                 pass
 
-        price_param = self.request.query_params.get('min_price', None)
-        if price_param:
-            try:
-                price_param = float(price_param)
-                queryset = queryset.filter(details__price__lte=price_param)
-            except ValueError:
-                pass
+        # price_param = self.request.query_params.get('min_price', None)
+        # if price_param:
+        #     try:
+        #         price_param = float(price_param)
+        #         queryset = queryset.filter(details__price__lte=price_param)
+        #     except ValueError:
+        #         pass
 
-        delivery_param = self.request.query_params.get(
-            'min_delivery_time', None)
-        if delivery_param:
-            try:
-                delivery_param = int(delivery_param)
-                queryset = queryset.filter(
-                    details__delivery_time_in_days__lte=delivery_param
-                )
-            except ValueError:
-                pass
+        # delivery_param = self.request.query_params.get(
+        #     'min_delivery_time', None)
+        # if delivery_param:
+        #     try:
+        #         delivery_param = int(delivery_param)
+        #         queryset = queryset.filter(
+        #             details__delivery_time_in_days__lte=delivery_param
+        #         )
+        #     except ValueError:
+        #         pass
 
         return queryset
 

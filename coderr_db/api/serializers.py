@@ -51,10 +51,23 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 class UserProfilSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.CharField(source='user.email')
 
     class Meta:
         model = UserProfil
         exclude = ['uploaded_at',]
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+
+        if 'email' in user_data:
+            instance.user.email = user_data['email']
+            instance.user.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class UserProfilBusinessSerializer(serializers.ModelSerializer):
