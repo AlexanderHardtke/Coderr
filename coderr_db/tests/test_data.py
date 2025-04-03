@@ -213,7 +213,6 @@ def create_business_user(user):
     return [
         UserProfil.objects.create(
                 user= user,
-                username= 'business',
                 first_name= 'Max',
                 last_name= 'Mustermann',
                 file= 'profile_picture.jpg',
@@ -222,7 +221,6 @@ def create_business_user(user):
                 description= 'Business description',
                 working_hours= '9-17',
                 type= 'business',
-                email= 'max@business.de',
                 created_at= '2023-01-01T12:00:00'
         )
     ]
@@ -231,7 +229,6 @@ def create_duplicate_business_user(user):
     return [
         UserProfil.objects.create(
                 user= user,
-                username= 'duplicate',
                 first_name= 'duplicate',
                 last_name= 'duplicate',
                 file= 'duplicate.jpg',
@@ -240,7 +237,6 @@ def create_duplicate_business_user(user):
                 description= 'duplicate description',
                 working_hours= '9-17',
                 type= 'business',
-                email= 'max@duplicate.de',
                 created_at= '2023-01-01T12:00:00'
         )
     ]
@@ -249,7 +245,6 @@ def create_customer_user(user):
     return [
         UserProfil.objects.create(
                 user= user,
-                username= 'customer',
                 first_name= 'Jane',
                 last_name= 'Doe',
                 file= 'profile_picture.jpg',
@@ -258,7 +253,6 @@ def create_customer_user(user):
                 description= 'customer description',
                 working_hours= '9-17',
                 type= 'customer',
-                email= 'max@customer.de',
                 created_at= '2023-01-01T12:00:00'
         )
     ]

@@ -74,11 +74,12 @@ class UserProfilBusinessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfil
-        exclude = ['email', 'created_at', 'uploaded_at']
+        exclude = ['created_at', 'uploaded_at']
 
 
 class UserProfilCustomerSerializer(serializers.ModelSerializer):
     uploaded_at = serializers.ReadOnlyField(source='created_at')
+    username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = UserProfil
