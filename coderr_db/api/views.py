@@ -87,7 +87,7 @@ class OfferViewSet(viewsets.ModelViewSet):
     ordering_fields = ['details__updated_at', 'details__price']
     allowed_query_params = {
         'creator_id', 'min_price', 'page_size',
-        'max_delivery_time', 'search', 'ordering'
+        'min_delivery_time', 'search', 'ordering'
     }
 
     def get_permissions(self):
@@ -138,7 +138,7 @@ class OfferViewSet(viewsets.ModelViewSet):
                 pass
 
         delivery_param = self.request.query_params.get(
-            'max_delivery_time', None)
+            'min_delivery_time', None)
         if delivery_param:
             try:
                 delivery_param = int(delivery_param)

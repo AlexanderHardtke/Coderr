@@ -113,9 +113,21 @@ class OfferSerializer(serializers.ModelSerializer):
         data = validated_data.pop('details')
         user = validated_data['user']
         offer = Offer.objects.create(**validated_data)
+        prices = []
+        delivery_times = []
         for detail_data in data:
+            price = detail_data.get('price')
+            delivery_time = detail_data.get('delivery_time_in_days')
+            if price is not None:
+                prices.append(price)
+            if delivery_time is not None:
+                delivery_times.append(delivery_time)
             OfferDetail.objects.create(
                 offer=offer, business_user=user, **detail_data)
+        offer.min_price = min(prices) if prices else 0
+        offer.min_delivery_time = min(delivery_times) if delivery_times else 0
+        offer.save()
+
         return offer
 
     def update(self, instance, validated_data):
@@ -140,6 +152,13 @@ class OfferSerializer(serializers.ModelSerializer):
                     detail_instance.save()
                 else:
                     OfferDetail.objects.create(offer=instance, **detail_data)
+
+            prices = [d.price for d in instance.details.all()]
+            delivery_times = [d.delivery_time_in_days for d in instance.details.all()]
+
+            instance.min_price = min(prices) if prices else 0
+            instance.min_delivery_time = min(delivery_times) if delivery_times else 0
+            instance.save()
 
         return instance
 
