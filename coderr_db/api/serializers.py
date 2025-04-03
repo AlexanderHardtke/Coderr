@@ -50,10 +50,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserProfilSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = UserProfil
-        fields = '__all__'
+        exclude = ['uploaded_at',]
 
 
 class UserProfilBusinessSerializer(serializers.ModelSerializer):
