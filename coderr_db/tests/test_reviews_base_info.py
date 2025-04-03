@@ -94,7 +94,7 @@ class ReviewTests(APITestCase):
         url = reverse('reviews-detail', kwargs={'pk': 1})
         data = {
             'rating': 5,
-            'description': 'Doch besser als erwartet!'
+            'description': 'Noch besser als erwartet!'
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

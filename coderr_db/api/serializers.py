@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from coderr_db.models import UserProfil, Offer, Order, Review, OfferDetail
 from django.contrib.auth.models import User
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -300,7 +300,7 @@ class Reviewserializer(serializers.ModelSerializer):
         reviewer = request.user.userprofil
         business_user = validated_data['business_user']
         if Review.objects.filter(business_user=business_user, reviewer=reviewer).exists():
-            raise serializers.ValidationError(
+            raise PermissionDenied(
                 'Du hast bereits eine Bewertung für diesen Anbieter abgegeben.')
         validated_data['reviewer'] = reviewer
         return super().create(validated_data)

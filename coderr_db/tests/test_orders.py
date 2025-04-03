@@ -162,14 +162,16 @@ class OrderTests(APITestCase):
         
         response = self.client.get(completed_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['order_count'], 1)
+        self.assertEqual(response.data['completed_order_count'], 1)
 
     def test_unauthorized_order_count_completed_detail(self):
-        url = reverse(
-            'completed-order-count-detail', kwargs={'pk': invalid_order_pk}
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token
         )
+        url = reverse('order-count-detail', kwargs={'pk': self.user.pk})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_not_found_order_count_completed_detail(self):
         url = reverse(

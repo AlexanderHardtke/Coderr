@@ -234,11 +234,17 @@ class OrderCountView(OrderCountBaseView):
 
 
 class CompletedOrderCountView(OrderCountBaseView):
+    serializer_class = OrderCountSerializer
     def get_queryset(self):
         return super().get_queryset().filter(status='completed')
     
     def get_object(self):
         user_pk = self.kwargs['pk']
+        user = get_object_or_404(UserProfil, pk=user_pk)
+
+        if user.type != 'business':
+            raise Http404(
+                'Kein Anbieter mit der angegebenen ID gefunden.')
 
         return {
             'completed_order_count': self.get_queryset().filter(
