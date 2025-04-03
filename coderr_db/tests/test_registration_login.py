@@ -32,9 +32,19 @@ class CreateUserTests(APITestCase):
         self.assertIsInstance(response.data['token'], str)
         self.assertIsInstance(response.data['user_id'], int)
 
+    def test_duplicate_user(self):
+        data = {
+            'username': 'exampleUsername',
+            'email': 'example@mail.de',
+            'password': 'examplePassword',
+            'repeated_password': 'examplePassword',
+            'type': 'customer'
+        }
+        response = self.client.post(self.url, data, format='json')
         response_duplicate = self.client.post(self.url, data, format='json')
         self.assertWarnsMessage(response_duplicate.data,
                                 'A user with that username already exists.')
+        self.assertEqual(response_duplicate.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_fail_create_user(self):
         data = {
