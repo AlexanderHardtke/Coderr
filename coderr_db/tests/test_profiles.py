@@ -40,13 +40,13 @@ class ProfileTests(APITestCase):
     def test_patch_profile(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         data = {
-            "first_name": "Max",
-            "last_name": "Mustermann",
-            "location": "Berlin",
-            "tel": "987654321",
-            "description": "Updated business description",
-            "working_hours": "10-18",
-            "email": "new_email@business.de"
+            'first_name': 'Max',
+            'last_name': 'Mustermann',
+            'location': 'Berlin',
+            'tel': '987654321',
+            'description': 'Updated business description',
+            'working_hours': '10-18',
+            'email': 'new_email@business.de'
         }
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.data['first_name'], 'Max')
@@ -73,13 +73,7 @@ class ProfileTests(APITestCase):
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_patch_profile_not_found(self):
-        url = reverse('profile-detail', kwargs={'pk': self.user.pk+1})
-        data = {'first_name': 'error'}
-        response = self.client.patch(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_unauthorized_owner(self):
+    def test_patch_unauthorized_owner(self):
         url = reverse('profile-detail', kwargs={'pk': self.user.pk})
         self.user = User.objects.create_user(
             username='otherUser',
@@ -90,6 +84,12 @@ class ProfileTests(APITestCase):
         data = {'first_name': 'error'}
         response = self.client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_patch_profile_not_found(self):
+        url = reverse('profile-detail', kwargs={'pk': self.user.pk+1})
+        data = {'first_name': 'error'}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_business_profiles(self):
         url = reverse('profiles-business-list')
@@ -109,7 +109,7 @@ class ProfileTests(APITestCase):
         self.assertContains(response, 'customer')
         self.assertIsInstance(response.data[0]['uploaded_at'], datetime)
 
-    def test_unauthorized_profiles(self):
+    def test_get_unauthorized_customer_profiles(self):
         unauthorized_token = 'unauthorized token'
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + unauthorized_token

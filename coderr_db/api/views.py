@@ -82,12 +82,13 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
-    ordering_fields = ['details__updated_at', 'details__price']
+    ordering_fields = ['updated_at', 'min_price']
+    ordering = ['-updated_at'] 
     allowed_query_params = {
         'creator_id', 'min_price', 'page_size',
-        'min_delivery_time', 'search', 'ordering'
+        'max_delivery_time', 'search', 'ordering'
     }
 
     def get_permissions(self):
@@ -129,24 +130,24 @@ class OfferViewSet(viewsets.ModelViewSet):
             except ValueError:
                 pass
 
-        # price_param = self.request.query_params.get('min_price', None)
-        # if price_param:
-        #     try:
-        #         price_param = float(price_param)
-        #         queryset = queryset.filter(details__price__lte=price_param)
-        #     except ValueError:
-        #         pass
+        price_param = self.request.query_params.get('min_price', None)
+        if price_param:
+            try:
+                price_param = float(price_param)
+                queryset = queryset.filter(details__price__lte=price_param)
+            except ValueError:
+                pass
 
-        # delivery_param = self.request.query_params.get(
-        #     'min_delivery_time', None)
-        # if delivery_param:
-        #     try:
-        #         delivery_param = int(delivery_param)
-        #         queryset = queryset.filter(
-        #             details__delivery_time_in_days__lte=delivery_param
-        #         )
-        #     except ValueError:
-        #         pass
+        delivery_param = self.request.query_params.get(
+            'max_delivery_time', None)
+        if delivery_param:
+            try:
+                delivery_param = int(delivery_param)
+                queryset = queryset.filter(
+                    details__delivery_time_in_days__lte=delivery_param
+                )
+            except ValueError:
+                pass
 
         return queryset
 
