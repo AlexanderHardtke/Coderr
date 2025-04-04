@@ -135,9 +135,10 @@ class OfferViewSet(viewsets.ModelViewSet):
 
         price_param = self.request.query_params.get('min_price', None)
         if price_param:
+            print(price_param)
             try:
                 price_param = float(price_param)
-                queryset = queryset.filter(details__price__gte=price_param)
+                queryset = queryset.filter(min_price__gte=price_param)
             except ValueError:
                 pass
 
