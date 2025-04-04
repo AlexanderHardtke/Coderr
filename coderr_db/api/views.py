@@ -221,7 +221,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not request.user.is_staff:
             return Response({'error': 'Sie haben keine Berechtigung, die Bestellung zu löschen.'}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
-    
+
     def list(self, request, *args, **kwargs):
         # if not IsAuthenticated().has_permission(request, self):
         #     return Response(
@@ -229,7 +229,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         #         status=status.HTTP_401_UNAUTHORIZED
         #     )
         return super().list(request, *args, **kwargs)
-        
+
 
 class OrderCountBaseView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
@@ -320,6 +320,14 @@ class ReviewViewSet(
             return Response(
                 {'detail': 'Nur Kunden dürfen Bewertungen erstellen.'},
                 status=status.HTTP_401_UNAUTHORIZED
+            )
+        required_fields = {'business_user', 'rating', 'description'}
+        received_fields = set(request.data.keys())
+        missing_fields = required_fields - received_fields
+        if missing_fields:
+            return Response(
+                {'detail': 'Falsche Parameter'},
+                status=status.HTTP_400_BAD_REQUEST
             )
         return super().create(request, *args, **kwargs)
 
