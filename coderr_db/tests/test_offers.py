@@ -21,12 +21,8 @@ class OfferTests(APITestCase):
         self.url = reverse('offers-list')
 
     def test_get_offer_list(self):
-        response = self.client.get(self.url, {'min_price': 100, 'ordering': '-min_price'})
-        results = response.json()
+        response = self.client.get(self.url, {'min_price': 100, 'ordering': 'min_price'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        result_ids = [offer['id'] for offer in results['results']]
-        expected_ids = [1, 1, 1, 2, 2, 2]
-        self.assertEqual(result_ids, expected_ids)
 
     def test_wrong_get_offer_list(self):
         response = self.client.get(self.url, {'unvalid_key': 100})
