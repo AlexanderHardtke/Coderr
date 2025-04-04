@@ -358,10 +358,10 @@ class BaseInfoView(APIView):
         offer_count = Offer.objects.count()
 
         data = {
-            'review_count': review_stats['review_count'],
+            'review_count': review_stats['review_count'] or 0,
             'average_rating': round(float(review_stats['average_rating'] or 0), 1),
-            'business_profile_count': business_count,
-            'offer_count': offer_count
+            'business_profile_count': business_count or 0,
+            'offer_count': offer_count or 0
         }
 
         return Response(data)
