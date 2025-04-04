@@ -16,6 +16,7 @@ from .serializers import (
 from django.db.models import Avg, Count
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from rest_framework.exceptions import ValidationError
 
 
 class RegistrationView(APIView):
@@ -28,16 +29,16 @@ class RegistrationView(APIView):
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         saved_user = serializer.save()
         token, created = Token.objects.get_or_create(user=saved_user)
         data = {}
         data = {
-                'token': token.key,
-                'username': saved_user.username,
-                'email': saved_user.email,
-                'user_id': saved_user.pk,
-            }
+            'token': token.key,
+            'username': saved_user.username,
+            'email': saved_user.email,
+            'user_id': saved_user.pk,
+        }
         return Response(data, status=status.HTTP_201_CREATED)
 
 
@@ -82,10 +83,11 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
-    ordering = ['-updated_at'] 
+    ordering = ['-updated_at']
     allowed_query_params = {
         'creator_id', 'min_price', 'page_size',
         'max_delivery_time', 'search', 'ordering'
@@ -143,11 +145,17 @@ class OfferViewSet(viewsets.ModelViewSet):
         if delivery_param:
             try:
                 delivery_param = int(delivery_param)
+                if delivery_days <= 0:
+                    raise ValidationError({
+                        'max_delivery_time': 'Muss eine positive Zahl sein'
+                    })
                 queryset = queryset.filter(
                     details__delivery_time_in_days__lte=delivery_param
                 )
             except ValueError:
-                pass
+                raise ValidationError({
+                    'max_delivery_time': 'Muss eine valide Zahl sein'
+                })
 
         return queryset
 
@@ -229,15 +237,17 @@ class OrderCountBaseView(generics.RetrieveAPIView):
 
 class OrderCountView(OrderCountBaseView):
     serializer_class = OrderCountSerializer
+
     def get_queryset(self):
         return super().get_queryset().filter(status='in_progress')
 
 
 class CompletedOrderCountView(OrderCountBaseView):
     serializer_class = OrderCountSerializer
+
     def get_queryset(self):
         return super().get_queryset().filter(status='completed')
-    
+
     def get_object(self):
         user_pk = self.kwargs['pk']
         user = get_object_or_404(UserProfil, pk=user_pk)
