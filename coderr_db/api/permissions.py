@@ -43,7 +43,8 @@ class IsOwnerOrAdminOfOrder(BasePermission):
 
 class IsOwnerOrAdminOfReview(BasePermission):
     def has_object_permission(self, request, view, obj):
+        if not request.user.is_authenticated:
+                return False
         if request.method in SAFE_METHODS:
             return request.user.is_authenticated
-
         return request.user.is_superuser or request.user.userprofil == obj.reviewer
