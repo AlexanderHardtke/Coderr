@@ -194,6 +194,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
+        if not IsAuthenticated().has_permission(request, self):
+            return Response(
+                {'detail': 'Nur angemeldet Nutzer dürfen Bestellungen bearbeiten.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
         if 'status' not in request.data or len(request.data) > 1:
             return Response(
                 {'error': 'Ungültiger Status oder unzulässige Felder in der Anfrage.'},
