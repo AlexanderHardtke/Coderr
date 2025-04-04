@@ -214,7 +214,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         if not request.user.is_staff:
             return Response({'error': 'Sie haben keine Berechtigung, die Bestellung zu löschen.'}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
-
+    
+    def list(self, request, *args, **kwargs):
+        if not IsAuthenticated().has_permission(request, self):
+            return Response(
+                {'detail': 'Nur angemeldet Nutzer dürfen Bestellungen ansehen.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        return super().list(request, *args, **kwargs)
+        
 
 class OrderCountBaseView(generics.RetrieveAPIView):
     serializer_class = OrderCountSerializer
