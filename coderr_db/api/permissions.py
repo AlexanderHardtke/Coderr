@@ -28,6 +28,8 @@ class IsCustomerUser(BasePermission):
 
     def has_permission(self, request, view):
         if request.method == 'POST':
+            if not request.user.is_authenticated:
+                return False
             return bool(request.user.userprofil.type == 'customer')
 
 
