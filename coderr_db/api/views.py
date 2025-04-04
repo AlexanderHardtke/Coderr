@@ -81,7 +81,6 @@ class UserSingleView(generics.RetrieveUpdateAPIView):
 
 
 class OfferViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     filter_backends = [DjangoFilterBackend,
@@ -95,11 +94,13 @@ class OfferViewSet(viewsets.ModelViewSet):
     }
 
     def get_permissions(self):
+        if self.request.method == 'GET':
+            return [IsAuthenticated()]
         if self.request.method == 'POST':
             return [IsBusinessUser()]
         else:
             return [IsOwnerOrAdmin()]
-
+    
     def list(self, request):
         self.pagination_class = SmallResultSetPagination
         query_params = set(request.query_params.keys())
@@ -166,13 +167,13 @@ class OfferViewSet(viewsets.ModelViewSet):
 
 
 class OfferDetailView(APIView):
+    permission_classes = [IsAuthenticated]
     queryset = OfferDetail.objects.all()
 
     def get(self, request, pk, format=None):
         if not request.user.is_authenticated:
             return Response({'detail': 'Benutzer ist nicht authentifiziert'}, status=status.HTTP_401_UNAUTHORIZED)
         try:
-            permission_classes = [IsAuthenticated]
             offer = OfferDetail.objects.get(pk=pk)
             serializer = OfferDetailSerializer(offer)
             return Response(serializer.data)
@@ -196,11 +197,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
-        # if not IsAuthenticated().has_permission(request, self):
-        #     return Response(
-        #         {'detail': 'Nur angemeldet Nutzer dürfen Bestellungen bearbeiten.'},
-        #         status=status.HTTP_401_UNAUTHORIZED
-        #     )
+        if not IsAuthenticated().has_permission(request, self):
+            return Response(
+                {'detail': 'Nur angemeldet Nutzer dürfen Bestellungen bearbeiten.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
         if 'status' not in request.data or len(request.data) > 1:
             return Response(
                 {'error': 'Ungültiger Status oder unzulässige Felder in der Anfrage.'},
@@ -223,11 +224,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
-        # if not IsAuthenticated().has_permission(request, self):
-        #     return Response(
-        #         {'detail': 'Nur angemeldet Nutzer dürfen Bestellungen ansehen.'},
-        #         status=status.HTTP_401_UNAUTHORIZED
-        #     )
+        if not IsAuthenticated().has_permission(request, self):
+            return Response(
+                {'detail': 'Nur angemeldet Nutzer dürfen Bestellungen ansehen.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
         return super().list(request, *args, **kwargs)
 
 
