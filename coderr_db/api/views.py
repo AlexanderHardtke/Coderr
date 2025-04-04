@@ -134,7 +134,7 @@ class OfferViewSet(viewsets.ModelViewSet):
         if price_param:
             try:
                 price_param = float(price_param)
-                queryset = queryset.filter(details__price__lte=price_param)
+                queryset = queryset.filter(details__price__gte=price_param)
             except ValueError:
                 pass
 

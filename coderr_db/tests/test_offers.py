@@ -25,7 +25,7 @@ class OfferTests(APITestCase):
         results = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         result_ids = [offer['id'] for offer in results['results']]
-        expected_ids = sorted(list(Offer.objects.filter(details__price__lte=100).values_list('id', flat=True)))
+        expected_ids = [1, 1, 1, 2, 2, 2]
         self.assertEqual(result_ids, expected_ids)
 
     def test_wrong_get_offer_list(self):
@@ -33,8 +33,10 @@ class OfferTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_offer(self):
+        initial_count = Offer.objects.count()
         response = self.client.post(self.url, new_offer_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Offer.objects.count(), initial_count + 1)
 
     def test_improper_post_offer(self):
         data = {

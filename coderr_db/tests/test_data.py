@@ -167,7 +167,7 @@ def create_test_offers(user):
         title='Android',
         revisions=2,
         delivery_time_in_days=3,
-        price=100,
+        price=75,
         features=['Funktional in Android-Store'],
         offer_type='basic'
     )
