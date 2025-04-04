@@ -97,6 +97,7 @@ class ProfileTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, 'Mustermann')
         self.assertIsInstance(response.data[0]['working_hours'], str)
+        self.assertIsInstance(response.data[0]['username'], str)
 
     def test_get_customer_profiles(self):
         self.test_user = User.objects.create_user(
