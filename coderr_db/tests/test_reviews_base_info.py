@@ -79,8 +79,10 @@ class ReviewTests(APITestCase):
             username='duplicate', password='duplicatepw'
         )
         self.duplicate_profile = create_duplicate_business_user(self.duplicate)
-        self.token = Token.objects.create(user=self.business_user)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        unauthorized_token = 'unauthorized token'
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + unauthorized_token
+        )
         data = {
             'business_user': self.duplicate_profile[0].id,
             'rating': 1,
