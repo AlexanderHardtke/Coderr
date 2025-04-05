@@ -90,7 +90,8 @@ class OfferViewSet(viewsets.ModelViewSet):
     ordering = ['-updated_at']
     allowed_query_params = {
         'creator_id', 'min_price', 'page_size',
-        'max_delivery_time', 'search', 'ordering'
+        'max_delivery_time', 'search', 'ordering',
+        'page', 'delivery_days'
     }
 
     def get_permissions(self):
@@ -100,7 +101,7 @@ class OfferViewSet(viewsets.ModelViewSet):
             return [IsBusinessUser()]
         else:
             return [IsOwnerOrAdmin()]
-    
+
     def list(self, request):
         self.pagination_class = SmallResultSetPagination
         query_params = set(request.query_params.keys())
@@ -143,11 +144,13 @@ class OfferViewSet(viewsets.ModelViewSet):
                 pass
 
         delivery_param = self.request.query_params.get(
-            'max_delivery_time', None)
+            'max_delivery_time',
+            self.request.query_params.get('delivery_days', None)
+        )
         if delivery_param:
             try:
                 delivery_param = int(delivery_param)
-                if delivery_days <= 0:
+                if delivery_param <= 0:
                     raise ValidationError({
                         'max_delivery_time': 'Muss eine positive Zahl sein'
                     })
