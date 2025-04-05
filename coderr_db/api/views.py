@@ -358,10 +358,12 @@ class BaseInfoView(APIView):
             average_rating=Avg('rating'),
         )
         business_count = UserProfil.objects.filter(type='business').count()
-        offer_count = str(Offer.objects.count())
+        offer_count = Offer.objects.count()
+        if not offer_count:
+            offer_count = 0
 
         data = {
-            'offer_count': offer_count or '0',
+            'offer_count': offer_count,
             'business_profile_count': business_count or 0,
             'review_count': review_stats['review_count'] or 0,
             'average_rating': round(float(review_stats['average_rating'] or 0), 1),
