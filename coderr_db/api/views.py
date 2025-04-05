@@ -96,7 +96,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method == 'GET':
-            return [IsAuthenticated()]
+            return [AllowAny()]
         if self.request.method == 'POST':
             return [IsBusinessUser()]
         else:
@@ -170,7 +170,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
 
 class OfferDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     queryset = OfferDetail.objects.all()
 
     def get(self, request, pk, format=None):
@@ -320,10 +320,15 @@ class ReviewViewSet(
         return context
 
     def create(self, request, *args, **kwargs):
+        if not IsAuthenticated().has_permission(request, self):
+            return Response(
+                {'detail': 'Nicht Autorisiert'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
         if not IsCustomerUser().has_permission(request, self):
             return Response(
                 {'detail': 'Nur Kunden dürfen Bewertungen erstellen.'},
-                status=status.HTTP_401_UNAUTHORIZED
+                status=status.HTTP_403_FORBIDDEN
             )
         required_fields = {'business_user', 'rating', 'description'}
         received_fields = set(request.data.keys())
@@ -368,6 +373,5 @@ class BaseInfoView(APIView):
             'review_count': review_stats['review_count'] or 0,
             'average_rating': round(float(review_stats['average_rating'] or 0), 1),
         }
-        print(data)
 
         return Response(data)
