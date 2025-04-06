@@ -170,7 +170,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
 
 class OfferDetailView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     queryset = OfferDetail.objects.all()
 
     def get(self, request, pk, format=None):
