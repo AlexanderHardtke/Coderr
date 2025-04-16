@@ -4,7 +4,9 @@ Django==5.1.7
 django-cors-headers==4.7.0
 django-filter==25.1
 djangorestframework==3.15.2
+gunicorn==23.0.0
 jsonschema-specifications==2024.10.1
+packaging==24.2
 referencing==0.36.2
 rpds-py==0.23.1
 sqlparse==0.5.3
